@@ -10,14 +10,6 @@ type Checkin = {
   stress: number;
 };
 
-type Milestone = {
-  progress_percent: number;
-};
-
-type StudySession = {
-  duration_minutes: number | null;
-};
-
 export function WeeklyEdgeScoreLoader() {
   const supabase = createBrowserClient();
   const [loading, setLoading] = useState(true);
@@ -41,8 +33,8 @@ export function WeeklyEdgeScoreLoader() {
       }
 
       const today = new Date();
-      const day = today.getDay(); // 0 Sun
-      const diff = day === 0 ? -6 : 1 - day; // Monday start
+      const day = today.getDay();
+      const diff = day === 0 ? -6 : 1 - day;
       const monday = new Date(today);
       monday.setDate(today.getDate() + diff);
       monday.setHours(0, 0, 0, 0);
@@ -50,23 +42,26 @@ export function WeeklyEdgeScoreLoader() {
       const mondayDate = monday.toISOString().slice(0, 10);
       const mondayIso = monday.toISOString();
 
-      const [{ data: checkins, error: checkinError }, { data: milestones, error: milestoneError }, { data: sessions, error: sessionError }] =
-        await Promise.all([
-          supabase
-            .from("daily_checkins")
-            .select("energy, stress")
-            .eq("user_id", user.id)
-            .gte("checkin_date", mondayDate),
-          supabase
-            .from("milestones")
-            .select("progress_percent")
-            .eq("user_id", user.id),
-          supabase
-            .from("study_sessions")
-            .select("duration_minutes")
-            .eq("user_id", user.id)
-            .gte("started_at", mondayIso),
-        ]);
+      const [
+        { data: checkins, error: checkinError },
+        { data: milestones, error: milestoneError },
+        { data: sessions, error: sessionError },
+      ] = await Promise.all([
+        supabase
+          .from("daily_checkins")
+          .select("energy, stress")
+          .eq("user_id", user.id)
+          .gte("checkin_date", mondayDate),
+        supabase
+          .from("milestones")
+          .select("progress_percent")
+          .eq("user_id", user.id),
+        supabase
+          .from("study_sessions")
+          .select("duration_minutes")
+          .eq("user_id", user.id)
+          .gte("started_at", mondayIso),
+      ]);
 
       if (checkinError || milestoneError || sessionError) {
         setLoading(false);
