@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const items = [
+const NAV = [
   { href: "/", label: "Home" },
   { href: "/progress", label: "Progress" },
   { href: "/study", label: "Study" },
@@ -11,22 +11,21 @@ const items = [
   { href: "/profile", label: "Profile" },
 ];
 
-export function BottomNav() {
+export default function BottomNav() {
   const pathname = usePathname();
 
   return (
     <nav className="bottom-nav">
       <div className="bottom-nav-inner">
-        {items.map(({ href, label }) => {
-          const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
-
+        {NAV.map((item) => {
+          const active = pathname === item.href;
           return (
             <Link
-              key={href}
-              href={href}
+              key={item.href}
+              href={item.href}
               className={`bottom-nav-link ${active ? "bottom-nav-link-active" : ""}`}
             >
-              {label}
+              {item.label}
             </Link>
           );
         })}
