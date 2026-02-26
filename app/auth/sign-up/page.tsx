@@ -3,64 +3,108 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@/lib/supabase/browser";
+import { AuthAltLink, AuthShell } from "@/components/auth/auth-shell";
 
 export default function SignUpPage() {
-  const supabase = createBrowserClient();
   const router = useRouter();
+  const [supabase] = useState(() => createBrowserClient());
+
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [msg, setMsg] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  return (
-    <main className="min-h-screen flex items-center justify-center p-6">
-      <div className="card-surface card-padding w-full max-w-md space-y-4">
-        <h1 className="text-xl font-semibold">Create account</h1>
-        <p className="text-sm text-zinc-400">Start your Scholars Edge beta journey.</p>
+  async function handleSignUp(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setLoading(true);
+    setMessage(null);
 
-        <div className="space-y-3">
+    const { data, error } = await supabase.auth.signUp({
+      email: email.trim(),
+      password,
+      options: {
+        data: {
+          full_name: fullName.trim() || null,
+        },
+      },
+    });
+
+    if (error) {
+      setLoading(false);
+      setMessage(error.message);
+      return;
+    }
+
+    const userId = data.user?.id;
+
+    if (userId) {
+      await supabase.from("profiles").upsert(
+        {
+          id: userId,
+          full_name: fullName.trim() || null,
+        },
+        { onConflict: "id" }
+      );
+    }
+
+    setLoading(false);
+    router.replace("/onboarding");
+    router.refresh();
+  }
+
+  return (
+    <AuthShell subtitle="Build your edge with structure, consistency, and a stronger daily process.">
+      <form onSubmit={handleSignUp} className="auth-form">
+        <div className="auth-mini-header">
+          <p className="auth-panel-kicker">Create your account</p>
+          <h2 className="auth-panel-title">Start building with intention</h2>
+        </div>
+
+        <div className="section-stack">
           <input
-            className="w-full rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2"
+            type="text"
+            className="field auth-input"
+            placeholder="Full name"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            autoComplete="name"
+          />
+
+          <input
+            type="email"
+            className="field auth-input"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            required
             autoComplete="email"
           />
+
           <input
-            className="w-full rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2"
-            placeholder="Password (min 6 chars)"
             type="password"
+            className="field auth-input"
+            placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            required
+            minLength={6}
             autoComplete="new-password"
           />
         </div>
 
-        <button
-          className="w-full rounded-xl bg-blue-500 px-4 py-2 font-medium hover:bg-blue-400 disabled:opacity-60"
-          disabled={loading}
-          onClick={async () => {
-            setMsg(null);
-            setLoading(true);
-            const { error } = await supabase.auth.signUp({ email, password });
-            setLoading(false);
-            if (error) return setMsg(error.message);
-            router.push("/");
-            router.refresh();
-          }}
-        >
-          {loading ? "Creating…" : "Create account"}
+        <button type="submit" className="btn-primary auth-submit auth-submit-lg" disabled={loading}>
+          {loading ? "Creating account…" : "Create Account"}
         </button>
 
-        <button
-          className="w-full rounded-xl border border-zinc-800 px-4 py-2 text-sm hover:bg-zinc-900"
-          onClick={() => router.push("/auth/sign-in")}
-        >
-          Back to sign in
-        </button>
+        {message ? <p className="auth-message">{message}</p> : null}
+      </form>
 
-        {msg ? <p className="text-sm text-red-300">{msg}</p> : null}
-      </div>
-    </main>
+      <AuthAltLink
+        text="Already have access?"
+        href="/auth/sign-in"
+        linkLabel="Enter here"
+      />
+    </AuthShell>
   );
 }
