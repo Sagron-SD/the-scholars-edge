@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@/lib/supabase/browser";
@@ -10,7 +10,7 @@ import { HomeSummary } from "@/components/home/home-summary";
 
 export default function HomePage() {
   const router = useRouter();
-  const supabase = createBrowserClient();
+  const [supabase] = useState(() => createBrowserClient());
 
   useEffect(() => {
     (async () => {
