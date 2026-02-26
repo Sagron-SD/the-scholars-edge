@@ -1,92 +1,117 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { createBrowserClient } from "@/lib/supabase/browser";
 
-export function AssignmentForm({
+type Assignment = {
+  id: string;
+  title: string;
+  due_date: string | null;
+  status: string;
+};
+
+type Exam = {
+  id: string;
+  title: string;
+  exam_date: string | null;
+};
+
+export function UpcomingAcademicItems({
   userId,
-  onCreated,
+  reloadKey = 0,
 }: {
   userId: string;
-  onCreated?: () => void;
+  reloadKey?: number;
 }) {
   const supabase = createBrowserClient();
-  const formRef = useRef<HTMLFormElement>(null);
-  const [loading, setLoading] = useState(false);
+  const [assignments, setAssignments] = useState<Assignment[]>([]);
+  const [exams, setExams] = useState<Exam[]>([]);
+  const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
 
+  async function loadItems() {
+    setLoading(true);
+    setMessage(null);
+
+    const [{ data: assignmentsData, error: assignmentError }, { data: examsData, error: examError }] =
+      await Promise.all([
+        supabase
+          .from("assignments")
+          .select("id, title, due_date, status")
+          .eq("user_id", userId)
+          .order("due_date", { ascending: true }),
+        supabase
+          .from("exams")
+          .select("id, title, exam_date")
+          .eq("user_id", userId)
+          .order("exam_date", { ascending: true }),
+      ]);
+
+    setLoading(false);
+
+    if (assignmentError || examError) {
+      return setMessage(assignmentError?.message || examError?.message || "Could not load items.");
+    }
+
+    setAssignments((assignmentsData || []) as Assignment[]);
+    setExams((examsData || []) as Exam[]);
+  }
+
+  useEffect(() => {
+    loadItems();
+  }, [reloadKey]);
+
   return (
-    <form
-      ref={formRef}
-      className="card-surface card-padding space-y-3"
-      onSubmit={async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setMessage(null);
-
-        const form = new FormData(e.currentTarget);
-        const title = String(form.get("title") || "").trim();
-        const due_date = String(form.get("due_date") || "").trim() || null;
-        const status = String(form.get("status") || "pending");
-
-        if (!title) {
-          setLoading(false);
-          return setMessage("Assignment title is required.");
-        }
-
-        const { error } = await supabase.from("assignments").insert({
-          user_id: userId,
-          title,
-          due_date,
-          status,
-        });
-
-        setLoading(false);
-
-        if (error) return setMessage(error.message);
-
-        formRef.current?.reset();
-        setMessage("Assignment added ✅");
-        onCreated?.();
-      }}
-    >
-      <h3 className="font-semibold">Add Assignment</h3>
-
-      <input
-        name="title"
-        className="w-full rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2"
-        placeholder="Ex: Midterm essay"
-        required
-      />
-
-      <div className="grid grid-cols-2 gap-3">
-        <input
-          name="due_date"
-          type="date"
-          className="rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2"
-        />
-
-        <select
-          name="status"
-          className="rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2"
-          defaultValue="pending"
+    <section className="space-y-3">
+      <div className="flex items-center justify-between">
+        <h2 className="px-1 font-semibold">Upcoming Academic Items</h2>
+        <button
+          className="rounded-xl border border-zinc-800 px-3 py-2 text-sm hover:bg-zinc-900"
+          onClick={loadItems}
         >
-          <option value="pending">Pending</option>
-          <option value="in_progress">In Progress</option>
-          <option value="submitted">Submitted</option>
-          <option value="completed">Completed</option>
-        </select>
+          Refresh
+        </button>
       </div>
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="rounded-xl bg-blue-500 px-4 py-2 font-medium hover:bg-blue-400 disabled:opacity-60"
-      >
-        {loading ? "Saving…" : "Add Assignment"}
-      </button>
+      {loading ? (
+        <div className="card-surface card-padding text-sm text-zinc-400">
+          Loading academic items…
+        </div>
+      ) : (
+        <>
+          <section className="card-surface card-padding space-y-2">
+            <h3 className="font-semibold">Assignments</h3>
+            {assignments.length ? (
+              assignments.map((a) => (
+                <div key={a.id} className="rounded-xl border border-zinc-800 p-3">
+                  <p className="font-medium">{a.title}</p>
+                  <p className="text-sm text-zinc-400">
+                    Due: {a.due_date || "—"} | Status: {a.status}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <p className="text-sm text-zinc-400">No assignments yet.</p>
+            )}
+          </section>
 
-      {message ? <p className="text-sm text-zinc-300">{message}</p> : null}
-    </form>
+          <section className="card-surface card-padding space-y-2">
+            <h3 className="font-semibold">Exams</h3>
+            {exams.length ? (
+              exams.map((e) => (
+                <div key={e.id} className="rounded-xl border border-zinc-800 p-3">
+                  <p className="font-medium">{e.title}</p>
+                  <p className="text-sm text-zinc-400">Date: {e.exam_date || "—"}</p>
+                </div>
+              ))
+            ) : (
+              <p className="text-sm text-zinc-400">No exams yet.</p>
+            )}
+          </section>
+        </>
+      )}
+
+      {message ? <p className="text-sm text-red-300">{message}</p> : null}
+    </section>
   );
 }
