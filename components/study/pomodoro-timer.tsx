@@ -12,7 +12,7 @@ export function PomodoroTimer({
   userId: string;
   onLogged?: () => void;
 }) {
-  const supabase = createBrowserClient();
+  const [supabase] = useState(() => createBrowserClient());
 
   const [mode, setMode] = useState<Mode>("pomodoro");
   const [minutes, setMinutes] = useState(25);
@@ -102,93 +102,81 @@ export function PomodoroTimer({
   }
 
   return (
-    <section className="card-surface card-padding space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <p className="text-sm text-zinc-400">Study Sprint</p>
-          <h2 className="text-lg font-semibold">Pomodoro Timer</h2>
+    <section className="premium-panel premium-panel-padding premium-stack">
+      <div className="study-timer-top">
+        <div className="section-stack" style={{ gap: 8 }}>
+          <p className="premium-kicker">Study Sprint</p>
+          <h2 className="premium-title">Focus session timer</h2>
+          <p className="premium-copy">
+            Create structured deep work and capture each session as visible momentum.
+          </p>
         </div>
-        <span className="text-3xl font-bold tracking-tight">{display}</span>
+
+        <div className="study-timer-display">{display}</div>
       </div>
 
-      <div className="grid grid-cols-2 gap-2">
+      <div className="study-mode-row">
         <button
           type="button"
           onClick={() => {
             setMode("pomodoro");
             setMessage(null);
           }}
-          className={`rounded-xl px-3 py-2 text-sm border ${
-            mode === "pomodoro"
-              ? "border-blue-500 bg-blue-500/10 text-blue-300"
-              : "border-zinc-800"
-          }`}
+          className={`study-mode-button ${mode === "pomodoro" ? "study-mode-button-active" : ""}`}
         >
           Pomodoro (25)
         </button>
+
         <button
           type="button"
           onClick={() => {
             setMode("deep_work");
             setMessage(null);
           }}
-          className={`rounded-xl px-3 py-2 text-sm border ${
-            mode === "deep_work"
-              ? "border-blue-500 bg-blue-500/10 text-blue-300"
-              : "border-zinc-800"
-          }`}
+          className={`study-mode-button ${mode === "deep_work" ? "study-mode-button-active" : ""}`}
         >
           Deep Work
         </button>
       </div>
 
       {mode === "deep_work" ? (
-        <div className="flex items-center gap-2">
-          <label className="text-sm text-zinc-300">Minutes</label>
+        <div className="study-minutes-row">
+          <label className="checkin-row-label">Deep work minutes</label>
           <input
             type="number"
             min={15}
             max={180}
             value={minutes}
             onChange={(e) => setMinutes(Number(e.target.value))}
-            className="w-24 rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2"
+            className="field auth-input study-minutes-input"
           />
         </div>
       ) : null}
 
-      <div className="flex flex-wrap gap-2">
-        <button
-          type="button"
-          onClick={handleStart}
-          className="rounded-xl bg-blue-500 px-4 py-2 font-medium hover:bg-blue-400"
-        >
-          Start
+      <div className="btn-row">
+        <button type="button" onClick={handleStart} className="auth-cta-button">
+          Start Session
         </button>
-        <button
-          type="button"
-          onClick={handlePause}
-          className="rounded-xl bg-zinc-800 px-4 py-2 font-medium hover:bg-zinc-700"
-        >
+
+        <button type="button" onClick={handlePause} className="btn-secondary">
           Pause
         </button>
-        <button
-          type="button"
-          onClick={handleReset}
-          className="rounded-xl border border-zinc-700 px-4 py-2 font-medium hover:bg-zinc-900"
-        >
+
+        <button type="button" onClick={handleReset} className="btn-ghost">
           Reset
         </button>
+
         <button
           type="button"
           onClick={handleLogSession}
           disabled={isLogging}
-          className="rounded-xl border border-blue-500 px-4 py-2 font-medium text-blue-300 hover:bg-blue-500/10 disabled:opacity-60"
+          className="btn-secondary"
         >
           {isLogging ? "Logging…" : "Log Session"}
         </button>
       </div>
 
-      {message ? <p className="text-sm text-zinc-300">{message}</p> : null}
+      {message ? <p className="auth-message">{message}</p> : null}
     </section>
   );
 }
