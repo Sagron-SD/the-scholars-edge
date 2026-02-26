@@ -12,7 +12,6 @@
   --text: #f4f4f5;
   --primary: #3b82f6;
   --primary-hover: #2563eb;
-  --primary-soft: rgba(59, 130, 246, 0.12);
 }
 
 * {
@@ -69,13 +68,38 @@ ul {
 .page-shell {
   max-width: 980px;
   margin: 0 auto;
-  padding: 24px 16px 110px;
+  padding: 18px 16px 110px;
 }
 
 .page-stack {
   display: flex;
   flex-direction: column;
   gap: 18px;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.topbar-brand {
+  display: flex;
+  align-items: center;
+}
+
+.topbar-logo {
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .page-header {
@@ -204,15 +228,8 @@ ul {
   letter-spacing: -0.03em;
 }
 
-.focus-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding-left: 20px;
-}
-
 .focus-item {
-  padding: 12px;
+  padding: 12px 14px;
   border: 1px solid var(--border);
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.02);
@@ -255,15 +272,15 @@ ul {
 
 @media (max-width: 640px) {
   .page-shell {
-    padding: 18px 14px 104px;
+    padding: 16px 14px 104px;
   }
 
   .page-title {
-    font-size: 1.8rem;
+    font-size: 1.75rem;
   }
 
-  .form-grid-2,
-  .metric-grid {
+  .metric-grid,
+  .form-grid-2 {
     grid-template-columns: 1fr;
   }
 
@@ -275,5 +292,9 @@ ul {
   .btn-secondary,
   .btn-ghost {
     width: 100%;
+  }
+
+  .topbar-logo {
+    font-size: 0.95rem;
   }
 }
