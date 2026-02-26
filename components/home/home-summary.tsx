@@ -25,22 +25,10 @@ export function HomeSummary() {
         { count: assignmentCount },
         { count: examCount },
       ] = await Promise.all([
-        supabase
-          .from("milestones")
-          .select("*", { count: "exact", head: true })
-          .eq("user_id", user.id),
-        supabase
-          .from("study_sessions")
-          .select("*", { count: "exact", head: true })
-          .eq("user_id", user.id),
-        supabase
-          .from("assignments")
-          .select("*", { count: "exact", head: true })
-          .eq("user_id", user.id),
-        supabase
-          .from("exams")
-          .select("*", { count: "exact", head: true })
-          .eq("user_id", user.id),
+        supabase.from("milestones").select("*", { count: "exact", head: true }).eq("user_id", user.id),
+        supabase.from("study_sessions").select("*", { count: "exact", head: true }).eq("user_id", user.id),
+        supabase.from("assignments").select("*", { count: "exact", head: true }).eq("user_id", user.id),
+        supabase.from("exams").select("*", { count: "exact", head: true }).eq("user_id", user.id),
       ]);
 
       setStats({
@@ -53,13 +41,7 @@ export function HomeSummary() {
   }, [supabase]);
 
   return (
-    <section
-      style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-        gap: 12,
-      }}
-    >
+    <section className="metric-grid">
       <SummaryCard label="Milestones" value={stats.milestones} />
       <SummaryCard label="Study Sessions" value={stats.studySessions} />
       <SummaryCard label="Assignments" value={stats.assignments} />
@@ -77,8 +59,8 @@ function SummaryCard({
 }) {
   return (
     <div className="card-surface card-padding">
-      <p className="muted">{label}</p>
-      <p style={{ fontSize: 28, fontWeight: 700, marginTop: 8 }}>{value}</p>
+      <p className="metric-card-label">{label}</p>
+      <p className="metric-card-value">{value}</p>
     </div>
   );
 }
