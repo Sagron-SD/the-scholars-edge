@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { createBrowserClient } from "@/lib/supabase/browser";
 
 export function HomeSummary() {
-  const supabase = createBrowserClient();
+  const [supabase] = useState(() => createBrowserClient());
 
   const [stats, setStats] = useState({
     milestones: 0,
