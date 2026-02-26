@@ -51,7 +51,7 @@ export default function HomePage() {
 
   return (
     <AppShell
-      title="The Scholars Edge"
+      title="Dashboard"
       subtitle="Your daily command center for academic momentum and success coaching."
     >
       {!checked ? (
