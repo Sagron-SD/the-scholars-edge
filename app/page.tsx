@@ -1,37 +1,34 @@
-"use client";
+import { AppShell } from "@/components/app-shell";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-
-const items = [
-  { href: "/", label: "Home" },
-  { href: "/progress", label: "Progress" },
-  { href: "/study", label: "Study" },
-  { href: "/community", label: "Community" },
-  { href: "/profile", label: "Profile" },
-];
-
-export function BottomNav() {
-  const pathname = usePathname();
-
+export default function HomePage() {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-zinc-800 bg-zinc-950/90 backdrop-blur">
-      <div className="mx-auto max-w-4xl grid grid-cols-5">
-        {items.map(({ href, label }) => {
-          const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
-          return (
-            <Link
-              key={href}
-              href={href}
-              className={`py-3 text-xs text-center ${
-                active ? "text-blue-400" : "text-zinc-400 hover:text-zinc-200"
-              }`}
-            >
-              {label}
-            </Link>
-          );
-        })}
-      </div>
-    </nav>
+    <AppShell
+      title="The Scholars Edge"
+      subtitle="Your daily command center for academic momentum and success coaching."
+    >
+      <section className="card-surface card-padding space-y-3">
+        <p className="text-sm text-zinc-400">Today’s Focus</p>
+        <h2 className="text-lg font-semibold">3 Priority Moves</h2>
+
+        <ul className="space-y-2 text-sm">
+          <li className="rounded-xl bg-zinc-950 border border-zinc-800 px-3 py-2">
+            ✅ Finish your highest-impact academic task first
+          </li>
+          <li className="rounded-xl bg-zinc-950 border border-zinc-800 px-3 py-2">
+            📚 Complete one focused study sprint
+          </li>
+          <li className="rounded-xl bg-zinc-950 border border-zinc-800 px-3 py-2">
+            🎯 Move one milestone forward by 5–10%
+          </li>
+        </ul>
+      </section>
+
+      <section className="card-surface card-padding space-y-2">
+        <h2 className="font-semibold">Weekly Edge Score</h2>
+        <p className="text-sm text-zinc-400">
+          Coming next: score breakdown from check-ins, study time, habits, and milestone progress.
+        </p>
+      </section>
+    </AppShell>
   );
 }
