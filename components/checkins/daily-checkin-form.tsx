@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@/lib/supabase/browser";
 
 function SelectRow({
@@ -33,7 +32,6 @@ function SelectRow({
 
 export function DailyCheckinForm() {
   const supabase = createBrowserClient();
-  const router = useRouter();
 
   const [userId, setUserId] = useState<string | null>(null);
   const [energy, setEnergy] = useState(3);
@@ -47,27 +45,30 @@ export function DailyCheckinForm() {
 
   const today = new Date().toISOString().slice(0, 10);
 
+  async function loadTodayCheckin(currentUserId: string) {
+    const { data: checkin } = await supabase
+      .from("daily_checkins")
+      .select("*")
+      .eq("user_id", currentUserId)
+      .eq("checkin_date", today)
+      .maybeSingle();
+
+    if (checkin) {
+      setEnergy(checkin.energy);
+      setFocus(checkin.focus);
+      setStress(checkin.stress);
+      setConfidence(checkin.confidence);
+      setNotes(checkin.notes || "");
+      setSavedAt(today);
+    }
+  }
+
   useEffect(() => {
     (async () => {
       const { data } = await supabase.auth.getUser();
       if (!data.user) return;
       setUserId(data.user.id);
-
-      const { data: checkin } = await supabase
-        .from("daily_checkins")
-        .select("*")
-        .eq("user_id", data.user.id)
-        .eq("checkin_date", today)
-        .maybeSingle();
-
-      if (checkin) {
-        setEnergy(checkin.energy);
-        setFocus(checkin.focus);
-        setStress(checkin.stress);
-        setConfidence(checkin.confidence);
-        setNotes(checkin.notes || "");
-        setSavedAt(today);
-      }
+      await loadTodayCheckin(data.user.id);
     })();
   }, [supabase, today]);
 
@@ -90,13 +91,14 @@ export function DailyCheckinForm() {
       { onConflict: "user_id,checkin_date" }
     );
 
+    if (error) {
+      setLoading(false);
+      return setMessage(error.message);
+    }
+
+    await loadTodayCheckin(userId);
     setLoading(false);
-
-    if (error) return setMessage(error.message);
-
-    setSavedAt(today);
     setMessage("Check-in saved ✅");
-    router.refresh();
   }
 
   return (
