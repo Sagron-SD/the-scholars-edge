@@ -13,9 +13,9 @@ export function AppShell({
     <>
       <main className="page-shell">
         <div className="page-stack">
-          <header className="space-y-2">
-            <h1>{title}</h1>
-            {subtitle ? <p className="muted">{subtitle}</p> : null}
+          <header className="page-header">
+            <h1 className="page-title">{title}</h1>
+            {subtitle ? <p className="page-subtitle">{subtitle}</p> : null}
           </header>
 
           {children}
