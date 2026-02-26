@@ -67,11 +67,7 @@ export default function SignInPage() {
           />
         </div>
 
-        <button
-          type="submit"
-          className="auth-cta-button"
-          disabled={loading}
-        >
+        <button type="submit" className="auth-cta-button" disabled={loading}>
           {loading ? "Entering…" : "Enter The Scholars Edge"}
         </button>
 
