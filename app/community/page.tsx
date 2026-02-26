@@ -21,7 +21,7 @@ export default function CommunityPage() {
   return (
     <AppShell
       title="Community"
-      subtitle="Progress-first social momentum. Learn, share, support."
+      subtitle="Share wins, reflections, and accountability with momentum-minded scholars."
     >
       {userId ? (
         <FeedComposer userId={userId} onPosted={() => setReloadKey((k) => k + 1)} />
