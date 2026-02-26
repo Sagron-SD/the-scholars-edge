@@ -1,117 +1,100 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useRef, useState } from "react";
 import { createBrowserClient } from "@/lib/supabase/browser";
 
-type Assignment = {
-  id: string;
-  title: string;
-  due_date: string | null;
-  status: string;
-};
-
-type Exam = {
-  id: string;
-  title: string;
-  exam_date: string | null;
-};
-
-export function UpcomingAcademicItems({
+export function AssignmentForm({
   userId,
-  reloadKey = 0,
+  onCreated,
 }: {
   userId: string;
-  reloadKey?: number;
+  onCreated?: () => void;
 }) {
-  const supabase = createBrowserClient();
-  const [assignments, setAssignments] = useState<Assignment[]>([]);
-  const [exams, setExams] = useState<Exam[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [supabase] = useState(() => createBrowserClient());
+  const formRef = useRef<HTMLFormElement>(null);
+  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
-  async function loadItems() {
-    setLoading(true);
-    setMessage(null);
-
-    const [{ data: assignmentsData, error: assignmentError }, { data: examsData, error: examError }] =
-      await Promise.all([
-        supabase
-          .from("assignments")
-          .select("id, title, due_date, status")
-          .eq("user_id", userId)
-          .order("due_date", { ascending: true }),
-        supabase
-          .from("exams")
-          .select("id, title, exam_date")
-          .eq("user_id", userId)
-          .order("exam_date", { ascending: true }),
-      ]);
-
-    setLoading(false);
-
-    if (assignmentError || examError) {
-      return setMessage(assignmentError?.message || examError?.message || "Could not load items.");
-    }
-
-    setAssignments((assignmentsData || []) as Assignment[]);
-    setExams((examsData || []) as Exam[]);
-  }
-
-  useEffect(() => {
-    loadItems();
-  }, [reloadKey]);
-
   return (
-    <section className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h2 className="px-1 font-semibold">Upcoming Academic Items</h2>
-        <button
-          className="rounded-xl border border-zinc-800 px-3 py-2 text-sm hover:bg-zinc-900"
-          onClick={loadItems}
+    <form
+      ref={formRef}
+      className="premium-panel premium-panel-padding premium-stack"
+      onSubmit={async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setMessage(null);
+
+        const form = new FormData(e.currentTarget);
+        const title = String(form.get("title") || "").trim();
+        const due_date = String(form.get("due_date") || "").trim() || null;
+        const status = String(form.get("status") || "pending");
+
+        if (!title) {
+          setLoading(false);
+          return setMessage("Assignment title is required.");
+        }
+
+        const { error } = await supabase.from("assignments").insert({
+          user_id: userId,
+          title,
+          due_date,
+          status,
+        });
+
+        setLoading(false);
+
+        if (error) return setMessage(error.message);
+
+        formRef.current?.reset();
+        setMessage("Assignment added ✅");
+        onCreated?.();
+      }}
+    >
+      <div className="premium-stack" style={{ gap: 8 }}>
+        <p className="premium-kicker">Assignments</p>
+        <h2 className="premium-title">Capture upcoming coursework</h2>
+        <p className="premium-copy">
+          Keep important deliverables visible so deadlines stop sneaking up on you.
+        </p>
+      </div>
+
+      <input
+        name="title"
+        className="field auth-input"
+        placeholder="Ex: Midterm essay"
+        required
+      />
+
+      <div className="form-grid-2">
+        <input
+          name="due_date"
+          type="date"
+          className="field auth-input"
+        />
+
+        <select
+          name="status"
+          className="select-field auth-input"
+          defaultValue="pending"
         >
-          Refresh
+          <option value="pending">Pending</option>
+          <option value="in_progress">In Progress</option>
+          <option value="submitted">Submitted</option>
+          <option value="completed">Completed</option>
+        </select>
+      </div>
+
+      <div className="btn-row">
+        <button
+          type="submit"
+          disabled={loading}
+          className="auth-cta-button"
+        >
+          {loading ? "Saving…" : "Add Assignment"}
         </button>
       </div>
 
-      {loading ? (
-        <div className="card-surface card-padding text-sm text-zinc-400">
-          Loading academic items…
-        </div>
-      ) : (
-        <>
-          <section className="card-surface card-padding space-y-2">
-            <h3 className="font-semibold">Assignments</h3>
-            {assignments.length ? (
-              assignments.map((a) => (
-                <div key={a.id} className="rounded-xl border border-zinc-800 p-3">
-                  <p className="font-medium">{a.title}</p>
-                  <p className="text-sm text-zinc-400">
-                    Due: {a.due_date || "—"} | Status: {a.status}
-                  </p>
-                </div>
-              ))
-            ) : (
-              <p className="text-sm text-zinc-400">No assignments yet.</p>
-            )}
-          </section>
-
-          <section className="card-surface card-padding space-y-2">
-            <h3 className="font-semibold">Exams</h3>
-            {exams.length ? (
-              exams.map((e) => (
-                <div key={e.id} className="rounded-xl border border-zinc-800 p-3">
-                  <p className="font-medium">{e.title}</p>
-                  <p className="text-sm text-zinc-400">Date: {e.exam_date || "—"}</p>
-                </div>
-              ))
-            ) : (
-              <p className="text-sm text-zinc-400">No exams yet.</p>
-            )}
-          </section>
-        </>
-      )}
-
-      {message ? <p className="text-sm text-red-300">{message}</p> : null}
-    </section>
+      {message ? <p className="auth-message">{message}</p> : null}
+    </form>
   );
 }
