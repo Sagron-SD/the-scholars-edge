@@ -36,22 +36,16 @@ export default function HomePage() {
     >
       <HomeSummary />
 
-      <section className="card-surface card-padding" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      <section className="card-surface card-padding section-stack">
+        <div className="section-stack" style={{ gap: 8 }}>
           <p className="muted">Today’s Focus</p>
           <h2>3 Priority Moves</h2>
         </div>
 
-        <ul style={{ display: "flex", flexDirection: "column", gap: 10, paddingLeft: 20, margin: 0 }}>
-          <li className="card-surface" style={{ padding: 12 }}>
-            ✅ Finish your highest-impact academic task first
-          </li>
-          <li className="card-surface" style={{ padding: 12 }}>
-            📚 Complete one focused study sprint
-          </li>
-          <li className="card-surface" style={{ padding: 12 }}>
-            🎯 Move one milestone forward by 5–10%
-          </li>
+        <ul className="focus-list">
+          <li className="focus-item">✅ Finish your highest-impact academic task first</li>
+          <li className="focus-item">📚 Complete one focused study sprint</li>
+          <li className="focus-item">🎯 Move one milestone forward by 5–10%</li>
         </ul>
 
         <div className="btn-row">
