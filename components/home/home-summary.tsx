@@ -32,10 +32,22 @@ export function HomeSummary() {
           assignmentsResult,
           examsResult,
         ] = await Promise.all([
-          supabase.from("milestones").select("*", { count: "exact", head: true }).eq("user_id", user.id),
-          supabase.from("study_sessions").select("*", { count: "exact", head: true }).eq("user_id", user.id),
-          supabase.from("assignments").select("*", { count: "exact", head: true }).eq("user_id", user.id),
-          supabase.from("exams").select("*", { count: "exact", head: true }).eq("user_id", user.id),
+          supabase
+            .from("milestones")
+            .select("*", { count: "exact", head: true })
+            .eq("user_id", user.id),
+          supabase
+            .from("study_sessions")
+            .select("*", { count: "exact", head: true })
+            .eq("user_id", user.id),
+          supabase
+            .from("assignments")
+            .select("*", { count: "exact", head: true })
+            .eq("user_id", user.id),
+          supabase
+            .from("exams")
+            .select("*", { count: "exact", head: true })
+            .eq("user_id", user.id),
         ]);
 
         if (!active) return;
@@ -61,11 +73,27 @@ export function HomeSummary() {
   }, [supabase]);
 
   return (
-    <section className="metric-grid">
-      <SummaryCard label="Milestones" value={loaded ? stats.milestones : "—"} />
-      <SummaryCard label="Study Sessions" value={loaded ? stats.studySessions : "—"} />
-      <SummaryCard label="Assignments" value={loaded ? stats.assignments : "—"} />
-      <SummaryCard label="Exams" value={loaded ? stats.exams : "—"} />
+    <section className="dashboard-summary-grid">
+      <SummaryCard
+        label="Milestones"
+        value={loaded ? stats.milestones : "—"}
+        accent="blue"
+      />
+      <SummaryCard
+        label="Study Sessions"
+        value={loaded ? stats.studySessions : "—"}
+        accent="violet"
+      />
+      <SummaryCard
+        label="Assignments"
+        value={loaded ? stats.assignments : "—"}
+        accent="emerald"
+      />
+      <SummaryCard
+        label="Exams"
+        value={loaded ? stats.exams : "—"}
+        accent="amber"
+      />
     </section>
   );
 }
@@ -73,14 +101,16 @@ export function HomeSummary() {
 function SummaryCard({
   label,
   value,
+  accent,
 }: {
   label: string;
   value: number | string;
+  accent: "blue" | "violet" | "emerald" | "amber";
 }) {
   return (
-    <div className="card-surface card-padding">
-      <p className="metric-card-label">{label}</p>
-      <p className="metric-card-value">{value}</p>
+    <div className={`dashboard-summary-card dashboard-summary-card-${accent}`}>
+      <p className="dashboard-summary-label">{label}</p>
+      <p className="dashboard-summary-value">{value}</p>
     </div>
   );
 }
