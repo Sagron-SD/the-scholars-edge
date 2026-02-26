@@ -14,13 +14,15 @@ type Milestone = {
 };
 
 export function MilestoneList({ userId }: { userId: string }) {
-  const supabase = createBrowserClient();
+  const [supabase] = useState(() => createBrowserClient());
   const [milestones, setMilestones] = useState<Milestone[]>([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
 
   async function loadMilestones() {
     setLoading(true);
+    setMessage(null);
+
     const { data, error } = await supabase
       .from("milestones")
       .select("*")
@@ -42,20 +44,23 @@ export function MilestoneList({ userId }: { userId: string }) {
   }, []);
 
   return (
-    <section className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h2 className="px-1 font-semibold">Milestones</h2>
-        <button
-          className="rounded-xl border border-zinc-800 px-3 py-2 text-sm hover:bg-zinc-900"
-          onClick={loadMilestones}
-        >
+    <section className="section-stack">
+      <div className="progress-list-header">
+        <div className="section-stack" style={{ gap: 4 }}>
+          <p className="premium-kicker">Milestones</p>
+          <h2 className="premium-title" style={{ fontSize: "1.7rem" }}>
+            Your active growth targets
+          </h2>
+        </div>
+
+        <button className="btn-secondary" onClick={loadMilestones}>
           Refresh
         </button>
       </div>
 
       {loading ? (
-        <div className="card-surface card-padding text-sm text-zinc-400">
-          Loading milestones…
+        <div className="premium-panel premium-panel-padding">
+          <p className="muted">Loading milestones…</p>
         </div>
       ) : milestones.length ? (
         milestones.map((m) => (
@@ -66,12 +71,12 @@ export function MilestoneList({ userId }: { userId: string }) {
           />
         ))
       ) : (
-        <div className="card-surface card-padding text-sm text-zinc-400">
-          No milestones yet. Create your first one above.
+        <div className="premium-panel premium-panel-padding">
+          <p className="muted">No milestones yet. Create your first one above.</p>
         </div>
       )}
 
-      {message ? <p className="text-sm text-red-300">{message}</p> : null}
+      {message ? <p className="auth-message">{message}</p> : null}
     </section>
   );
 }
@@ -83,7 +88,7 @@ function MilestoneCard({
   milestone: Milestone;
   onUpdated: () => void;
 }) {
-  const supabase = createBrowserClient();
+  const [supabase] = useState(() => createBrowserClient());
   const [progress, setProgress] = useState(milestone.progress_percent);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -111,55 +116,67 @@ function MilestoneCard({
   }
 
   return (
-    <div className="card-surface card-padding space-y-3">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="text-xs uppercase tracking-wide text-zinc-400">
-            {milestone.category.replace("_", " ")}
-          </p>
-          <h3 className="font-semibold">{milestone.title}</h3>
+    <div className="premium-panel premium-panel-padding premium-stack">
+      <div className="progress-card-top">
+        <div className="section-stack" style={{ gap: 8 }}>
+          <div className="progress-card-meta">
+            <span className="progress-chip">
+              {milestone.category.replace("_", " ")}
+            </span>
+            <span className={`progress-status ${milestone.status === "completed" ? "progress-status-complete" : ""}`}>
+              {milestone.status}
+            </span>
+          </div>
+
+          <h3 className="progress-card-title">{milestone.title}</h3>
+
           {milestone.next_action ? (
-            <p className="mt-1 text-sm text-zinc-400">Next: {milestone.next_action}</p>
+            <p className="premium-copy">
+              <strong style={{ color: "#f8fafc" }}>Next:</strong> {milestone.next_action}
+            </p>
           ) : null}
+
           {milestone.target_date ? (
-            <p className="mt-1 text-xs text-zinc-500">Target: {milestone.target_date}</p>
+            <p className="muted" style={{ fontSize: 14 }}>
+              Target date: {milestone.target_date}
+            </p>
           ) : null}
         </div>
 
-        <span className="text-sm text-zinc-300">{progress}%</span>
+        <div className="progress-card-percent">{progress}%</div>
       </div>
 
-      <div className="h-2 rounded-full bg-zinc-800">
+      <div className="progress-bar-shell">
         <div
-          className="h-2 rounded-full bg-blue-500"
+          className="progress-bar-fill"
           style={{ width: `${progress}%` }}
         />
       </div>
 
-      <div className="space-y-2 rounded-xl border border-zinc-800 p-3">
-        <div className="flex items-center justify-between">
-          <label className="text-sm text-zinc-300">Update progress</label>
-          <span className="text-xs text-zinc-500">{milestone.status}</span>
+      <div className="progress-card-controls">
+        <div className="section-stack" style={{ gap: 8 }}>
+          <label className="checkin-row-label">Update progress</label>
+          <input
+            type="range"
+            min={0}
+            max={100}
+            value={progress}
+            onChange={(e) => setProgress(Number(e.target.value))}
+            className="progress-range"
+          />
         </div>
 
-        <input
-          type="range"
-          min={0}
-          max={100}
-          value={progress}
-          onChange={(e) => setProgress(Number(e.target.value))}
-          className="w-full"
-        />
+        <div className="btn-row">
+          <button
+            disabled={saving}
+            onClick={saveProgress}
+            className="btn-secondary"
+          >
+            {saving ? "Saving…" : "Save Progress"}
+          </button>
+        </div>
 
-        <button
-          disabled={saving}
-          onClick={saveProgress}
-          className="rounded-xl bg-zinc-800 px-3 py-2 text-sm hover:bg-zinc-700 disabled:opacity-60"
-        >
-          {saving ? "Saving…" : "Save Progress"}
-        </button>
-
-        {message ? <p className="text-sm text-zinc-300">{message}</p> : null}
+        {message ? <p className="auth-message">{message}</p> : null}
       </div>
     </div>
   );
