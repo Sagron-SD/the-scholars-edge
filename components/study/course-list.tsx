@@ -31,7 +31,7 @@ export function CourseList({
   userId: string;
   reloadKey?: number;
 }) {
-  const supabase = createBrowserClient();
+  const [supabase] = useState(() => createBrowserClient());
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
@@ -71,45 +71,58 @@ export function CourseList({
       : null;
 
   return (
-    <section className="space-y-3">
-      <div className="card-surface card-padding space-y-2">
-        <h3 className="font-semibold">GPA Snapshot</h3>
-        <p className="text-sm text-zinc-400">
-          Current estimated GPA: {gpa !== null ? gpa.toFixed(2) : "N/A"}
-        </p>
-        <p className="text-xs text-zinc-500">Based on saved course grades and credits.</p>
+    <section className="section-stack">
+      <div className="premium-panel premium-panel-padding premium-stack">
+        <div className="premium-stack" style={{ gap: 6 }}>
+          <p className="premium-kicker">GPA Snapshot</p>
+          <h2 className="premium-title" style={{ fontSize: "1.7rem" }}>
+            Current estimated GPA: {gpa !== null ? gpa.toFixed(2) : "N/A"}
+          </h2>
+          <p className="premium-copy">
+            Based on saved course grades and credit hours.
+          </p>
+        </div>
       </div>
 
-      <div className="flex items-center justify-between">
-        <h2 className="px-1 font-semibold">Courses</h2>
-        <button
-          className="rounded-xl border border-zinc-800 px-3 py-2 text-sm hover:bg-zinc-900"
-          onClick={loadCourses}
-        >
+      <div className="progress-list-header">
+        <div className="section-stack" style={{ gap: 4 }}>
+          <p className="premium-kicker">Course list</p>
+          <h2 className="premium-title" style={{ fontSize: "1.7rem" }}>
+            Your academic load
+          </h2>
+        </div>
+
+        <button className="btn-secondary" onClick={loadCourses}>
           Refresh
         </button>
       </div>
 
       {loading ? (
-        <div className="card-surface card-padding text-sm text-zinc-400">
-          Loading courses…
+        <div className="premium-panel premium-panel-padding">
+          <p className="muted">Loading courses…</p>
         </div>
       ) : courses.length ? (
         courses.map((course) => (
-          <div key={course.id} className="card-surface card-padding space-y-1">
-            <h3 className="font-semibold">{course.title}</h3>
-            <p className="text-sm text-zinc-400">
-              Credits: {course.credits ?? "—"} | Grade: {course.current_grade ?? "—"}
+          <div key={course.id} className="premium-panel premium-panel-padding course-card">
+            <div className="course-card-top">
+              <h3 className="progress-card-title">{course.title}</h3>
+              <div className="course-grade-chip">
+                {course.current_grade ?? "—"}
+              </div>
+            </div>
+
+            <p className="premium-copy">
+              Credits: {course.credits ?? "—"}
             </p>
           </div>
         ))
       ) : (
-        <div className="card-surface card-padding text-sm text-zinc-400">
-          No courses yet. Add your first class above.
+        <div className="premium-panel premium-panel-padding">
+          <p className="muted">No courses yet. Add your first class above.</p>
         </div>
       )}
 
-      {message ? <p className="text-sm text-red-300">{message}</p> : null}
+      {message ? <p className="auth-message">{message}</p> : null}
     </section>
   );
 }
