@@ -19,6 +19,7 @@ export function BottomNav() {
       <div className="mx-auto max-w-4xl grid grid-cols-5">
         {items.map(({ href, label }) => {
           const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
+
           return (
             <Link
               key={href}
