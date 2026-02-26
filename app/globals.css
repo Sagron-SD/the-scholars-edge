@@ -6,14 +6,18 @@
   color-scheme: dark;
 }
 
+/* Temporary: avoid @apply until Tailwind pipeline is confirmed */
 body {
-  @apply bg-zinc-950 text-zinc-100;
+  background: #09090b;
+  color: #f4f4f5;
 }
 
 .card-surface {
-  @apply rounded-2xl border border-zinc-800 bg-zinc-950/60;
+  border: 1px solid #27272a;
+  background: rgba(9, 9, 11, 0.6);
+  border-radius: 16px;
 }
 
 .card-padding {
-  @apply p-4;
+  padding: 16px;
 }
