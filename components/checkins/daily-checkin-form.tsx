@@ -70,7 +70,7 @@ export function DailyCheckinForm() {
       setUserId(data.user.id);
       await loadTodayCheckin(data.user.id);
     })();
-  }, [supabase, today]);
+  }, [today]);
 
   async function saveCheckin() {
     if (!userId) return setMessage("You must be signed in.");
@@ -99,6 +99,10 @@ export function DailyCheckinForm() {
     await loadTodayCheckin(userId);
     setLoading(false);
     setMessage("Check-in saved ✅");
+
+    setTimeout(() => {
+      window.location.href = "/";
+    }, 500);
   }
 
   return (
