@@ -42,23 +42,23 @@ export default function HomePage() {
           <h2>3 Priority Moves</h2>
         </div>
 
-        <ul className="focus-list">
-          <li className="focus-item">✅ Finish your highest-impact academic task first</li>
-          <li className="focus-item">📚 Complete one focused study sprint</li>
-          <li className="focus-item">🎯 Move one milestone forward by 5–10%</li>
-        </ul>
+        <div className="section-stack">
+          <div className="focus-item">✅ Finish your highest-impact academic task first</div>
+          <div className="focus-item">📚 Complete one focused study sprint</div>
+          <div className="focus-item">🎯 Move one milestone forward by 5–10%</div>
+        </div>
 
         <div className="btn-row">
           <Link href="/progress" className="btn-primary">
-            Go to Progress
+            Progress
           </Link>
 
           <Link href="/study" className="btn-secondary">
-            Go to Study
+            Study
           </Link>
 
           <Link href="/community" className="btn-secondary">
-            Go to Community
+            Community
           </Link>
         </div>
       </section>
