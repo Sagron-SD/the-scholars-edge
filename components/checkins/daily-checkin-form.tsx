@@ -55,60 +55,79 @@ export function DailyCheckinForm() {
 
   const today = new Date().toISOString().slice(0, 10);
 
-  async function loadTodayCheckin(currentUserId: string) {
-    const { data: checkin } = await supabase
-      .from("daily_checkins")
-      .select("*")
-      .eq("user_id", currentUserId)
-      .eq("checkin_date", today)
-      .maybeSingle();
-
-    if (checkin) {
-      setEnergy(checkin.energy);
-      setFocus(checkin.focus);
-      setStress(checkin.stress);
-      setConfidence(checkin.confidence);
-      setNotes(checkin.notes || "");
-      setSavedAt(today);
-    }
-  }
-
   useEffect(() => {
-    (async () => {
-      const { data } = await supabase.auth.getUser();
-      if (!data.user) return;
-      setUserId(data.user.id);
-      await loadTodayCheckin(data.user.id);
-    })();
+    let active = true;
+
+    async function loadCheckin() {
+      try {
+        const { data } = await supabase.auth.getUser();
+        if (!data.user || !active) return;
+
+        setUserId(data.user.id);
+
+        const { data: checkin } = await supabase
+          .from("daily_checkins")
+          .select("*")
+          .eq("user_id", data.user.id)
+          .eq("checkin_date", today)
+          .maybeSingle();
+
+        if (!active || !checkin) return;
+
+        setEnergy(checkin.energy);
+        setFocus(checkin.focus);
+        setStress(checkin.stress);
+        setConfidence(checkin.confidence);
+        setNotes(checkin.notes || "");
+        setSavedAt(today);
+      } catch {
+        if (!active) return;
+      }
+    }
+
+    loadCheckin();
+
+    return () => {
+      active = false;
+    };
   }, [supabase, today]);
 
   async function saveCheckin() {
-    if (!userId) return setMessage("You must be signed in.");
+    if (!userId) {
+      setMessage("You must be signed in.");
+      return;
+    }
 
     setLoading(true);
     setMessage(null);
 
-    const { error } = await supabase.from("daily_checkins").upsert(
-      {
-        user_id: userId,
-        checkin_date: today,
-        energy,
-        focus,
-        stress,
-        confidence,
-        notes: notes.trim() || null,
-      },
-      { onConflict: "user_id,checkin_date" }
-    );
+    try {
+      const { error } = await supabase.from("daily_checkins").upsert(
+        {
+          user_id: userId,
+          checkin_date: today,
+          energy,
+          focus,
+          stress,
+          confidence,
+          notes: notes.trim() || null,
+        },
+        { onConflict: "user_id,checkin_date" }
+      );
 
-    if (error) {
+      if (error) {
+        setLoading(false);
+        setMessage(error.message);
+        return;
+      }
+
+      setSavedAt(today);
+      setMessage("Check-in saved ✅");
+    } catch {
+      setMessage("Could not save check-in.");
+    } finally {
       setLoading(false);
-      return setMessage(error.message);
     }
-
-    await loadTodayCheckin(userId);
-    setLoading(false);
-    setMessage("Check-in saved ✅");
   }
 
   return (
@@ -136,13 +155,17 @@ export function DailyCheckinForm() {
       />
 
       <div className="btn-row">
-        <button disabled={loading} onClick={saveCheckin} className="btn-primary">
+        <button type="button" disabled={loading} onClick={saveCheckin} className="btn-primary">
           {loading ? "Saving…" : "Save Check-In"}
         </button>
       </div>
 
       {message ? <p className="muted">{message}</p> : null}
-      {savedAt ? <p className="muted" style={{ fontSize: 14 }}>Saved for {savedAt}</p> : null}
+      {savedAt ? (
+        <p className="muted" style={{ fontSize: 14 }}>
+          Saved for {savedAt}
+        </p>
+      ) : null}
     </section>
   );
 }
