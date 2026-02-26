@@ -61,7 +61,7 @@ export default function HomePage() {
       <PageStack>
         <PageHeader
           title="Dashboard"
-          subtitle="Your daily command center for academic momentum and success coaching."
+          subtitle="Your command center for academic momentum, success coaching, and long-term growth."
           right={
             <Link href="/profile" className="btn-ghost">
               Profile
@@ -75,6 +75,35 @@ export default function HomePage() {
           </Card>
         ) : (
           <>
+            <Card className="dashboard-hero">
+              <div className="dashboard-hero-stack">
+                <div className="section-stack" style={{ gap: 8 }}>
+                  <p className="premium-kicker">Today’s Direction</p>
+                  <h2 className="dashboard-hero-title">
+                    Build momentum with clarity, discipline, and intention.
+                  </h2>
+                  <p className="dashboard-hero-copy">
+                    Anchor your day around the few moves that matter most, then
+                    let your system do the heavy lifting.
+                  </p>
+                </div>
+
+                <div className="btn-row">
+                  <Link href="/progress" className="btn-primary">
+                    View Progress
+                  </Link>
+
+                  <Link href="/study" className="btn-secondary">
+                    Start Study
+                  </Link>
+
+                  <Link href="/community" className="btn-secondary">
+                    Community
+                  </Link>
+                </div>
+              </div>
+            </Card>
+
             <HomeSummary />
 
             <Card>
@@ -82,6 +111,9 @@ export default function HomePage() {
                 <div className="section-stack" style={{ gap: 8 }}>
                   <Muted>Today’s Focus</Muted>
                   <h2>3 Priority Moves</h2>
+                  <p className="premium-copy">
+                    Keep the day simple. Focus beats overwhelm.
+                  </p>
                 </div>
 
                 <div className="section-stack">
@@ -94,20 +126,6 @@ export default function HomePage() {
                   <div className="focus-item">
                     🎯 Move one milestone forward by 5–10%
                   </div>
-                </div>
-
-                <div className="btn-row">
-                  <Link href="/progress" className="btn-primary">
-                    Progress
-                  </Link>
-
-                  <Link href="/study" className="btn-secondary">
-                    Study
-                  </Link>
-
-                  <Link href="/community" className="btn-secondary">
-                    Community
-                  </Link>
                 </div>
               </div>
             </Card>
