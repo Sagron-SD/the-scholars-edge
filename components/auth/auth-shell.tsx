@@ -15,7 +15,9 @@ export function AuthShell({
     <main className="auth-page auth-page-centered">
       <div className="auth-centered-wrap">
         <section className="auth-hero-minimal">
-          <p className="auth-brand-kicker">SUCCESS COACHING • ACADEMIC GROWTH • WELLNESS</p>
+          <p className="auth-brand-kicker">
+            Success Coaching • Academic Growth • Wellness
+          </p>
           <h1 className="auth-brand-title">The Scholars Edge</h1>
           {subtitle ? <p className="auth-brand-subtitle">{subtitle}</p> : null}
         </section>
