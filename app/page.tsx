@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@/lib/supabase/browser";
 import { AppShell } from "@/components/app-shell";
 import { DailyCheckinForm } from "@/components/checkins/daily-checkin-form";
+import { HomeSummary } from "@/components/home/home-summary";
 
 export default function HomePage() {
   const router = useRouter();
@@ -33,6 +34,8 @@ export default function HomePage() {
       title="The Scholars Edge"
       subtitle="Your daily command center for academic momentum and success coaching."
     >
+      <HomeSummary />
+
       <section className="card-surface card-padding space-y-3">
         <p className="text-sm text-zinc-400">Today’s Focus</p>
         <h2 className="text-lg font-semibold">3 Priority Moves</h2>
