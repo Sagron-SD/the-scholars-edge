@@ -851,3 +851,93 @@ ul {
     font-size: 1.3rem;
   }
 }
+.study-timer-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.study-timer-display {
+  color: #f8fafc;
+  font-size: clamp(2.2rem, 5vw, 3.6rem);
+  line-height: 1;
+  font-weight: 900;
+  letter-spacing: -0.05em;
+}
+
+.study-mode-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.study-mode-button {
+  min-height: 48px;
+  border-radius: 16px;
+  border: 1px solid #3f3f46;
+  background: rgba(9, 9, 11, 0.78);
+  color: #f8fafc;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.18s ease;
+}
+
+.study-mode-button:hover {
+  border-color: #60a5fa;
+}
+
+.study-mode-button-active {
+  border-color: #60a5fa;
+  background: rgba(37, 99, 235, 0.12);
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.12);
+  color: #bfdbfe;
+}
+
+.study-minutes-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.study-minutes-input {
+  max-width: 140px;
+}
+
+.study-session-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.study-session-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.study-session-value {
+  color: #f8fafc;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+@media (max-width: 640px) {
+  .study-timer-top,
+  .study-minutes-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .study-mode-row {
+    grid-template-columns: 1fr;
+  }
+
+  .study-minutes-input {
+    max-width: 100%;
+    width: 100%;
+  }
+}
