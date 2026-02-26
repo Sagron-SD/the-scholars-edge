@@ -1,15 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@/lib/supabase/browser";
-
-type Checkin = {
-  energy: number;
-  focus: number;
-  stress: number;
-  confidence: number;
-  notes: string | null;
-};
 
 function SelectRow({
   label,
@@ -40,6 +33,7 @@ function SelectRow({
 
 export function DailyCheckinForm() {
   const supabase = createBrowserClient();
+  const router = useRouter();
 
   const [userId, setUserId] = useState<string | null>(null);
   const [energy, setEnergy] = useState(3);
@@ -49,6 +43,7 @@ export function DailyCheckinForm() {
   const [notes, setNotes] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [savedAt, setSavedAt] = useState<string | null>(null);
 
   const today = new Date().toISOString().slice(0, 10);
 
@@ -71,6 +66,7 @@ export function DailyCheckinForm() {
         setStress(checkin.stress);
         setConfidence(checkin.confidence);
         setNotes(checkin.notes || "");
+        setSavedAt(today);
       }
     })();
   }, [supabase, today]);
@@ -97,7 +93,10 @@ export function DailyCheckinForm() {
     setLoading(false);
 
     if (error) return setMessage(error.message);
+
+    setSavedAt(today);
     setMessage("Check-in saved ✅");
+    router.refresh();
   }
 
   return (
@@ -131,6 +130,7 @@ export function DailyCheckinForm() {
       </button>
 
       {message ? <p className="text-sm text-zinc-300">{message}</p> : null}
+      {savedAt ? <p className="text-xs text-zinc-500">Saved for {savedAt}</p> : null}
     </section>
   );
 }
