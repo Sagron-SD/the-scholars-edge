@@ -15,8 +15,8 @@ export function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-zinc-800 bg-zinc-950/90 backdrop-blur">
-      <div className="mx-auto max-w-4xl grid grid-cols-5">
+    <nav className="bottom-nav">
+      <div className="bottom-nav-inner">
         {items.map(({ href, label }) => {
           const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
 
@@ -24,9 +24,7 @@ export function BottomNav() {
             <Link
               key={href}
               href={href}
-              className={`py-3 text-xs text-center ${
-                active ? "text-blue-400" : "text-zinc-400 hover:text-zinc-200"
-              }`}
+              className={`bottom-nav-link ${active ? "bottom-nav-link-active" : ""}`}
             >
               {label}
             </Link>
