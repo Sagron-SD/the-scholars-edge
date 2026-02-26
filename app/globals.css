@@ -941,3 +941,37 @@ ul {
     width: 100%;
   }
 }
+.course-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.course-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.course-grade-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 56px;
+  min-height: 40px;
+  border-radius: 14px;
+  padding: 0 12px;
+  background: rgba(37, 99, 235, 0.12);
+  border: 1px solid rgba(96, 165, 250, 0.18);
+  color: #bfdbfe;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+@media (max-width: 640px) {
+  .course-card-top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
