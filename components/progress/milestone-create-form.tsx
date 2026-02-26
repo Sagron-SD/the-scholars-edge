@@ -10,7 +10,7 @@ export function MilestoneCreateForm({
   userId: string;
   onCreated?: () => void;
 }) {
-  const supabase = createBrowserClient();
+  const [supabase] = useState(() => createBrowserClient());
   const formRef = useRef<HTMLFormElement>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -18,7 +18,7 @@ export function MilestoneCreateForm({
   return (
     <form
       ref={formRef}
-      className="card-surface card-padding space-y-3"
+      className="premium-panel premium-panel-padding premium-stack"
       onSubmit={async (e) => {
         e.preventDefault();
         setMessage(null);
@@ -54,19 +54,25 @@ export function MilestoneCreateForm({
         onCreated?.();
       }}
     >
-      <h3 className="font-semibold">Create Milestone</h3>
+      <div className="premium-stack" style={{ gap: 8 }}>
+        <p className="premium-kicker">Create milestone</p>
+        <h2 className="premium-title">Turn ambition into visible motion</h2>
+        <p className="premium-copy">
+          Define the outcome, set the category, and anchor it with a next step.
+        </p>
+      </div>
 
       <input
         name="title"
-        className="w-full rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2"
+        className="field auth-input"
         placeholder="Ex: Raise GPA to 3.5"
         required
       />
 
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+      <div className="form-grid-2">
         <select
           name="category"
-          className="rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2"
+          className="select-field auth-input"
           defaultValue="academic"
         >
           <option value="academic">Academic</option>
@@ -79,25 +85,27 @@ export function MilestoneCreateForm({
         <input
           name="target_date"
           type="date"
-          className="rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2"
+          className="field auth-input"
         />
       </div>
 
       <input
         name="next_action"
-        className="w-full rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2"
+        className="field auth-input"
         placeholder="Next action (optional)"
       />
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="rounded-xl bg-blue-500 px-4 py-2 font-medium hover:bg-blue-400 disabled:opacity-60"
-      >
-        {loading ? "Saving…" : "Add Milestone"}
-      </button>
+      <div className="btn-row">
+        <button
+          type="submit"
+          disabled={loading}
+          className="auth-cta-button"
+        >
+          {loading ? "Saving…" : "Add Milestone"}
+        </button>
+      </div>
 
-      {message ? <p className="text-sm text-zinc-300">{message}</p> : null}
+      {message ? <p className="auth-message">{message}</p> : null}
     </form>
   );
 }
