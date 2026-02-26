@@ -20,30 +20,51 @@ export default function ProfilePage() {
   const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => {
+    let active = true;
+
     (async () => {
-      const { data: auth } = await supabase.auth.getUser();
-      const user = auth.user;
+      try {
+        const { data: auth } = await supabase.auth.getUser();
+        const user = auth.user;
 
-      if (!user) {
+        if (!user) {
+          if (active) setLoading(false);
+          return;
+        }
+
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("full_name, username, school_level, persona_type")
+          .eq("id", user.id)
+          .maybeSingle();
+
+        if (!active) return;
+
+        if (error) {
+          setMessage(error.message);
+          setLoading(false);
+          return;
+        }
+
+        setProfile((data || null) as Profile | null);
         setLoading(false);
-        return;
+      } catch {
+        if (!active) return;
+        setMessage("Could not load profile.");
+        setLoading(false);
       }
-
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("full_name, username, school_level, persona_type")
-        .eq("id", user.id)
-        .maybeSingle();
-
-      setLoading(false);
-
-      if (error) return setMessage(error.message);
-      setProfile((data || null) as Profile | null);
     })();
+
+    return () => {
+      active = false;
+    };
   }, [supabase]);
 
   return (
-    <AppShell title="Profile" subtitle="Your identity, settings, and streak.">
+    <AppShell
+      title="Profile"
+      subtitle="Your identity, preferences, and account settings."
+    >
       {loading ? (
         <section className="card-surface card-padding text-sm text-zinc-400">
           Loading profile…
@@ -52,15 +73,25 @@ export default function ProfilePage() {
         <ProfileCard profile={profile} />
       )}
 
-      <section className="card-surface card-padding space-y-3">
-        <h2 className="font-semibold">Account Actions</h2>
-        <p className="text-sm text-zinc-400">
-          More profile editing controls are coming next.
-        </p>
-        <SignOutButton />
-      </section>
+      <section className="card-surface card-padding section-stack">
+        <div className="section-stack" style={{ gap: 6 }}>
+          <p className="text-xs uppercase tracking-wide text-zinc-400">
+            Account
+          </p>
+          <h2 className="text-lg font-semibold">Account actions</h2>
+          <p className="text-sm text-zinc-400">
+            Manage your session and security.
+          </p>
+        </div>
 
-      {message ? <p className="text-sm text-red-300">{message}</p> : null}
+        <div className="btn-row" style={{ justifyContent: "flex-start" }}>
+          <SignOutButton />
+        </div>
+
+        {message ? (
+          <p className="text-sm text-red-300">{message}</p>
+        ) : null}
+      </section>
     </AppShell>
   );
 }
