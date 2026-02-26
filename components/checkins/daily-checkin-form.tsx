@@ -7,28 +7,24 @@ function SelectRow({
   label,
   value,
   setValue,
+  hint,
 }: {
   label: string;
   value: number;
   setValue: (n: number) => void;
+  hint?: string;
 }) {
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "1fr 110px",
-        gap: 12,
-        alignItems: "center",
-      }}
-    >
-      <label className="muted" style={{ fontSize: 15 }}>
-        {label}
-      </label>
+    <div className="checkin-row">
+      <div className="checkin-row-copy">
+        <label className="checkin-row-label">{label}</label>
+        {hint ? <p className="checkin-row-hint">{hint}</p> : null}
+      </div>
 
       <select
         value={String(value)}
         onChange={(e) => setValue(Number(e.target.value))}
-        className="select-field"
+        className="select-field checkin-select"
       >
         {[1, 2, 3, 4, 5].map((n) => (
           <option key={n} value={n}>
@@ -131,36 +127,62 @@ export function DailyCheckinForm() {
   }
 
   return (
-    <section className="card-surface card-padding section-stack">
-      <div className="section-stack" style={{ gap: 8 }}>
-        <h3>Coaching Pulse Check</h3>
-        <p className="muted">
-          Quick daily read on your state so your plan matches your energy.
+    <section className="premium-panel premium-panel-padding premium-stack">
+      <div className="premium-stack" style={{ gap: 8 }}>
+        <p className="premium-kicker">Daily Coaching Pulse</p>
+        <h2 className="premium-title">Check in with your current state</h2>
+        <p className="premium-copy">
+          The strongest growth systems respond to how you actually feel, not just what is on the schedule.
         </p>
       </div>
 
-      <div className="section-stack">
-        <SelectRow label="Energy" value={energy} setValue={setEnergy} />
-        <SelectRow label="Focus" value={focus} setValue={setFocus} />
-        <SelectRow label="Stress" value={stress} setValue={setStress} />
-        <SelectRow label="Confidence" value={confidence} setValue={setConfidence} />
+      <div className="checkin-grid">
+        <SelectRow
+          label="Energy"
+          value={energy}
+          setValue={setEnergy}
+          hint="How resourced you feel today."
+        />
+        <SelectRow
+          label="Focus"
+          value={focus}
+          setValue={setFocus}
+          hint="How locked in and mentally clear you are."
+        />
+        <SelectRow
+          label="Stress"
+          value={stress}
+          setValue={setStress}
+          hint="How much pressure you’re carrying right now."
+        />
+        <SelectRow
+          label="Confidence"
+          value={confidence}
+          setValue={setConfidence}
+          hint="How strongly you believe in your ability to execute."
+        />
       </div>
 
       <textarea
         rows={4}
         value={notes}
         onChange={(e) => setNotes(e.target.value)}
-        className="textarea-field"
-        placeholder="Optional note — what’s affecting your day?"
+        className="textarea-field checkin-notes"
+        placeholder="Optional reflection — what is shaping your day right now?"
       />
 
       <div className="btn-row">
-        <button type="button" disabled={loading} onClick={saveCheckin} className="btn-primary">
-          {loading ? "Saving…" : "Save Check-In"}
+        <button
+          type="button"
+          disabled={loading}
+          onClick={saveCheckin}
+          className="auth-cta-button"
+        >
+          {loading ? "Saving…" : "Save Today’s Check-In"}
         </button>
       </div>
 
-      {message ? <p className="muted">{message}</p> : null}
+      {message ? <p className="auth-message">{message}</p> : null}
       {savedAt ? (
         <p className="muted" style={{ fontSize: 14 }}>
           Saved for {savedAt}
