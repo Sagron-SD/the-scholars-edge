@@ -10,7 +10,7 @@ export function FeedComposer({
   userId: string;
   onPosted?: () => void;
 }) {
-  const supabase = createBrowserClient();
+  const [supabase] = useState(() => createBrowserClient());
   const [postType, setPostType] = useState("reflection");
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -19,7 +19,7 @@ export function FeedComposer({
   return (
     <form
       ref={formRef}
-      className="card-surface card-padding space-y-3"
+      className="premium-panel premium-panel-padding premium-stack"
       onSubmit={async (e) => {
         e.preventDefault();
         setMessage(null);
@@ -50,12 +50,18 @@ export function FeedComposer({
         onPosted?.();
       }}
     >
-      <h3 className="font-semibold">Share a progress update</h3>
+      <div className="premium-stack" style={{ gap: 8 }}>
+        <p className="premium-kicker">Share an update</p>
+        <h2 className="premium-title">Post your momentum</h2>
+        <p className="premium-copy">
+          Log a win, reflect on your process, or create accountability around what you are building next.
+        </p>
+      </div>
 
       <select
         value={postType}
         onChange={(e) => setPostType(e.target.value)}
-        className="rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm"
+        className="select-field auth-input"
       >
         <option value="win">Win</option>
         <option value="study_session">Study Session</option>
@@ -66,21 +72,23 @@ export function FeedComposer({
 
       <textarea
         name="content"
-        rows={3}
-        className="w-full rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm"
-        placeholder="Log a win, study session, milestone update, or reflection..."
+        rows={4}
+        className="textarea-field"
+        placeholder="Share a win, study session, milestone update, or reflection..."
         required
       />
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="rounded-xl bg-blue-500 px-4 py-2 font-medium hover:bg-blue-400 disabled:opacity-60"
-      >
-        {loading ? "Posting…" : "Post"}
-      </button>
+      <div className="btn-row">
+        <button
+          type="submit"
+          disabled={loading}
+          className="auth-cta-button"
+        >
+          {loading ? "Posting…" : "Publish Update"}
+        </button>
+      </div>
 
-      {message ? <p className="text-sm text-zinc-300">{message}</p> : null}
+      {message ? <p className="auth-message">{message}</p> : null}
     </form>
   );
 }
