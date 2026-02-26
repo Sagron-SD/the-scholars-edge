@@ -19,7 +19,10 @@ export default function ProgressPage() {
   }, [supabase]);
 
   return (
-    <AppShell title="Progress" subtitle="Milestones, habits, and weekly momentum.">
+    <AppShell
+      title="Progress"
+      subtitle="Track meaningful goals and keep your momentum visible."
+    >
       {userId ? (
         <>
           <MilestoneCreateForm
