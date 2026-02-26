@@ -10,7 +10,7 @@ export function CourseForm({
   userId: string;
   onCreated?: () => void;
 }) {
-  const supabase = createBrowserClient();
+  const [supabase] = useState(() => createBrowserClient());
   const formRef = useRef<HTMLFormElement>(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -18,7 +18,7 @@ export function CourseForm({
   return (
     <form
       ref={formRef}
-      className="card-surface card-padding space-y-3"
+      className="premium-panel premium-panel-padding premium-stack"
       onSubmit={async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -50,41 +50,49 @@ export function CourseForm({
         onCreated?.();
       }}
     >
-      <h3 className="font-semibold">Add Course</h3>
+      <div className="premium-stack" style={{ gap: 8 }}>
+        <p className="premium-kicker">Courses</p>
+        <h2 className="premium-title">Add a class to your academic system</h2>
+        <p className="premium-copy">
+          Track your courses, credits, and current standing in one place.
+        </p>
+      </div>
 
       <input
         name="title"
-        className="w-full rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2"
+        className="field auth-input"
         placeholder="Ex: Biology 101"
         required
       />
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="form-grid-2">
         <input
           name="credits"
           type="number"
           min={0}
           step="0.5"
-          className="rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2"
+          className="field auth-input"
           placeholder="Credits"
         />
 
         <input
           name="current_grade"
-          className="rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2"
+          className="field auth-input"
           placeholder="Grade (A, B+, etc.)"
         />
       </div>
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="rounded-xl bg-blue-500 px-4 py-2 font-medium hover:bg-blue-400 disabled:opacity-60"
-      >
-        {loading ? "Saving…" : "Add Course"}
-      </button>
+      <div className="btn-row">
+        <button
+          type="submit"
+          disabled={loading}
+          className="auth-cta-button"
+        >
+          {loading ? "Saving…" : "Add Course"}
+        </button>
+      </div>
 
-      {message ? <p className="text-sm text-zinc-300">{message}</p> : null}
+      {message ? <p className="auth-message">{message}</p> : null}
     </form>
   );
 }
