@@ -35,18 +35,21 @@ export default function SignInPage() {
   }
 
   return (
-    <AuthShell subtitle="A cleaner system for momentum, discipline, and academic growth.">
+    <AuthShell subtitle="A success coaching platform for academic momentum, personal discipline, and long-term growth.">
       <form onSubmit={handleSignIn} className="auth-form">
         <div className="auth-mini-header">
           <p className="auth-panel-kicker">Welcome back</p>
-          <h2 className="auth-panel-title">Continue your momentum</h2>
+          <h2 className="auth-panel-title">Step back into your edge</h2>
+          <p className="auth-panel-copy">
+            Re-enter your system, track your progress, and move with intention.
+          </p>
         </div>
 
         <div className="section-stack">
           <input
             type="email"
             className="field auth-input"
-            placeholder="Email"
+            placeholder="Email address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -64,8 +67,12 @@ export default function SignInPage() {
           />
         </div>
 
-        <button type="submit" className="btn-primary auth-submit auth-submit-lg" disabled={loading}>
-          {loading ? "Signing in…" : "Enter The Scholars Edge"}
+        <button
+          type="submit"
+          className="auth-cta-button"
+          disabled={loading}
+        >
+          {loading ? "Entering…" : "Enter The Scholars Edge"}
         </button>
 
         {message ? <p className="auth-message">{message}</p> : null}
