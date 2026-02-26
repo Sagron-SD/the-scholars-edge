@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@/lib/supabase/browser";
 import { AppShell } from "@/components/app-shell";
 import { DailyCheckinForm } from "@/components/checkins/daily-checkin-form";
+import { WeeklyEdgeScoreLoader } from "@/components/edge-score/weekly-edge-score-loader";
 
 export default function HomePage() {
   const router = useRouter();
@@ -49,13 +50,24 @@ export default function HomePage() {
           </li>
         </ul>
 
-        <Link
-          href="/progress"
-          className="inline-block rounded-xl bg-blue-500 px-4 py-2 font-medium hover:bg-blue-400"
-        >
-          Go to Progress
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link
+            href="/progress"
+            className="inline-block rounded-xl bg-blue-500 px-4 py-2 font-medium hover:bg-blue-400"
+          >
+            Go to Progress
+          </Link>
+
+          <Link
+            href="/study"
+            className="inline-block rounded-xl border border-zinc-800 px-4 py-2 font-medium hover:bg-zinc-900"
+          >
+            Go to Study
+          </Link>
+        </div>
       </section>
+
+      <WeeklyEdgeScoreLoader />
 
       <DailyCheckinForm />
     </AppShell>
