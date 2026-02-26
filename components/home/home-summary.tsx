@@ -53,7 +53,13 @@ export function HomeSummary() {
   }, [supabase]);
 
   return (
-    <section className="grid grid-cols-2 gap-3 md:grid-cols-4">
+    <section
+      style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+        gap: 12,
+      }}
+    >
       <SummaryCard label="Milestones" value={stats.milestones} />
       <SummaryCard label="Study Sessions" value={stats.studySessions} />
       <SummaryCard label="Assignments" value={stats.assignments} />
@@ -71,8 +77,8 @@ function SummaryCard({
 }) {
   return (
     <div className="card-surface card-padding">
-      <p className="text-sm text-zinc-400">{label}</p>
-      <p className="text-2xl font-semibold">{value}</p>
+      <p className="muted">{label}</p>
+      <p style={{ fontSize: 28, fontWeight: 700, marginTop: 8 }}>{value}</p>
     </div>
   );
 }
