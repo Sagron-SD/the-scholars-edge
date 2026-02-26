@@ -31,7 +31,7 @@ function SelectRow({
 }
 
 export function DailyCheckinForm() {
-  const supabase = createBrowserClient();
+  const [supabase] = useState(() => createBrowserClient());
 
   const [userId, setUserId] = useState<string | null>(null);
   const [energy, setEnergy] = useState(3);
@@ -70,7 +70,7 @@ export function DailyCheckinForm() {
       setUserId(data.user.id);
       await loadTodayCheckin(data.user.id);
     })();
-  }, [today]);
+  }, [supabase, today]);
 
   async function saveCheckin() {
     if (!userId) return setMessage("You must be signed in.");
@@ -99,10 +99,6 @@ export function DailyCheckinForm() {
     await loadTodayCheckin(userId);
     setLoading(false);
     setMessage("Check-in saved ✅");
-
-    setTimeout(() => {
-      window.location.href = "/";
-    }, 500);
   }
 
   return (
