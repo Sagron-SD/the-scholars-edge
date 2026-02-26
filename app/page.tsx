@@ -14,13 +14,16 @@ export default function HomePage() {
       const { data: u } = await supabase.auth.getUser();
       if (!u.user) return router.replace("/auth/sign-in");
 
-      const { data: profile } = await supabase
+      const { data: profile, error } = await supabase
         .from("profiles")
-        .select("id")
+        .select("id, persona_type, school_level")
         .eq("id", u.user.id)
         .maybeSingle();
 
-      if (!profile) router.replace("/onboarding");
+      // If profile missing OR required fields missing -> onboarding
+      if (error || !profile || !profile.persona_type || !profile.school_level) {
+        router.replace("/onboarding");
+      }
     })();
   }, [router, supabase]);
 
@@ -29,7 +32,6 @@ export default function HomePage() {
       title="The Scholars Edge"
       subtitle="Your daily command center for academic momentum and success coaching."
     >
-      {/* same sections as before */}
       <section className="card-surface card-padding space-y-3">
         <p className="text-sm text-zinc-400">Today’s Focus</p>
         <h2 className="text-lg font-semibold">3 Priority Moves</h2>
