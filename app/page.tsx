@@ -4,9 +4,16 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@/lib/supabase/browser";
-import { AppShell } from "@/components/app-shell";
+import BottomNav from "@/components/bottom-nav";
 import { DailyCheckinForm } from "@/components/checkins/daily-checkin-form";
 import { HomeSummary } from "@/components/home/home-summary";
+import {
+  PageShell,
+  PageStack,
+  PageHeader,
+  Card,
+  Muted,
+} from "@/components/ui/primitives";
 
 export default function HomePage() {
   const router = useRouter();
@@ -50,48 +57,67 @@ export default function HomePage() {
   }, [router, supabase]);
 
   return (
-    <AppShell
-      title="Dashboard"
-      subtitle="Your daily command center for academic momentum and success coaching."
-    >
-      {!checked ? (
-        <section className="card-surface card-padding">
-          <p className="muted">Loading dashboard…</p>
-        </section>
-      ) : (
-        <>
-          <HomeSummary />
+    <PageShell>
+      <PageStack>
+        <PageHeader
+          title="Dashboard"
+          subtitle="Your daily command center for academic momentum and success coaching."
+          right={
+            <Link href="/profile" className="btn-ghost">
+              Profile
+            </Link>
+          }
+        />
 
-          <section className="card-surface card-padding section-stack">
-            <div className="section-stack" style={{ gap: 8 }}>
-              <p className="muted">Today’s Focus</p>
-              <h2>3 Priority Moves</h2>
-            </div>
+        {!checked ? (
+          <Card>
+            <Muted>Loading dashboard…</Muted>
+          </Card>
+        ) : (
+          <>
+            <HomeSummary />
 
-            <div className="section-stack">
-              <div className="focus-item">✅ Finish your highest-impact academic task first</div>
-              <div className="focus-item">📚 Complete one focused study sprint</div>
-              <div className="focus-item">🎯 Move one milestone forward by 5–10%</div>
-            </div>
+            <Card>
+              <div className="section-stack">
+                <div className="section-stack" style={{ gap: 8 }}>
+                  <Muted>Today’s Focus</Muted>
+                  <h2>3 Priority Moves</h2>
+                </div>
 
-            <div className="btn-row">
-              <Link href="/progress" className="btn-primary">
-                Progress
-              </Link>
+                <div className="section-stack">
+                  <div className="focus-item">
+                    ✅ Finish your highest-impact academic task first
+                  </div>
+                  <div className="focus-item">
+                    📚 Complete one focused study sprint
+                  </div>
+                  <div className="focus-item">
+                    🎯 Move one milestone forward by 5–10%
+                  </div>
+                </div>
 
-              <Link href="/study" className="btn-secondary">
-                Study
-              </Link>
+                <div className="btn-row">
+                  <Link href="/progress" className="btn-primary">
+                    Progress
+                  </Link>
 
-              <Link href="/community" className="btn-secondary">
-                Community
-              </Link>
-            </div>
-          </section>
+                  <Link href="/study" className="btn-secondary">
+                    Study
+                  </Link>
 
-          <DailyCheckinForm />
-        </>
-      )}
-    </AppShell>
+                  <Link href="/community" className="btn-secondary">
+                    Community
+                  </Link>
+                </div>
+              </div>
+            </Card>
+
+            <DailyCheckinForm />
+          </>
+        )}
+      </PageStack>
+
+      <BottomNav />
+    </PageShell>
   );
 }
