@@ -7,6 +7,9 @@ import { PomodoroTimer } from "@/components/study/pomodoro-timer";
 import { StudySessionList } from "@/components/study/study-session-list";
 import { CourseForm } from "@/components/study/course-form";
 import { CourseList } from "@/components/study/course-list";
+import { AssignmentForm } from "@/components/study/assignment-form";
+import { ExamForm } from "@/components/study/exam-form";
+import { UpcomingAcademicItems } from "@/components/study/upcoming-academic-items";
 
 export default function StudyPage() {
   const supabase = createBrowserClient();
@@ -26,8 +29,13 @@ export default function StudyPage() {
         <>
           <PomodoroTimer userId={userId} onLogged={() => setReloadKey((k) => k + 1)} />
           <StudySessionList userId={userId} reloadKey={reloadKey} />
+
           <CourseForm userId={userId} onCreated={() => setReloadKey((k) => k + 1)} />
           <CourseList userId={userId} reloadKey={reloadKey} />
+
+          <AssignmentForm userId={userId} onCreated={() => setReloadKey((k) => k + 1)} />
+          <ExamForm userId={userId} onCreated={() => setReloadKey((k) => k + 1)} />
+          <UpcomingAcademicItems userId={userId} reloadKey={reloadKey} />
         </>
       ) : (
         <section className="card-surface card-padding text-sm text-zinc-400">
