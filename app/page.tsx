@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@/lib/supabase/browser";
 import { AppShell } from "@/components/app-shell";
@@ -20,7 +21,6 @@ export default function HomePage() {
         .eq("id", u.user.id)
         .maybeSingle();
 
-      // If profile missing OR required fields missing -> onboarding
       if (error || !profile || !profile.persona_type || !profile.school_level) {
         router.replace("/onboarding");
       }
@@ -37,16 +37,23 @@ export default function HomePage() {
         <h2 className="text-lg font-semibold">3 Priority Moves</h2>
 
         <ul className="space-y-2 text-sm">
-          <li className="rounded-xl bg-zinc-950 border border-zinc-800 px-3 py-2">
+          <li className="rounded-xl border border-zinc-800 px-3 py-2">
             ✅ Finish your highest-impact academic task first
           </li>
-          <li className="rounded-xl bg-zinc-950 border border-zinc-800 px-3 py-2">
+          <li className="rounded-xl border border-zinc-800 px-3 py-2">
             📚 Complete one focused study sprint
           </li>
-          <li className="rounded-xl bg-zinc-950 border border-zinc-800 px-3 py-2">
+          <li className="rounded-xl border border-zinc-800 px-3 py-2">
             🎯 Move one milestone forward by 5–10%
           </li>
         </ul>
+
+        <Link
+          href="/progress"
+          className="inline-block rounded-xl bg-blue-500 px-4 py-2 font-medium hover:bg-blue-400"
+        >
+          Go to Progress
+        </Link>
       </section>
     </AppShell>
   );
