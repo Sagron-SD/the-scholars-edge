@@ -54,11 +54,14 @@ export default function SignUpPage() {
   }
 
   return (
-    <AuthShell subtitle="Build your edge with structure, consistency, and a stronger daily process.">
+    <AuthShell subtitle="A success coaching platform for academic momentum, personal discipline, and long-term growth.">
       <form onSubmit={handleSignUp} className="auth-form">
         <div className="auth-mini-header">
           <p className="auth-panel-kicker">Create your account</p>
-          <h2 className="auth-panel-title">Start building with intention</h2>
+          <h2 className="auth-panel-title">Start building your edge</h2>
+          <p className="auth-panel-copy">
+            Create your account and begin a stronger daily system for academic and personal growth.
+          </p>
         </div>
 
         <div className="section-stack">
@@ -74,7 +77,7 @@ export default function SignUpPage() {
           <input
             type="email"
             className="field auth-input"
-            placeholder="Email"
+            placeholder="Email address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -93,8 +96,12 @@ export default function SignUpPage() {
           />
         </div>
 
-        <button type="submit" className="btn-primary auth-submit auth-submit-lg" disabled={loading}>
-          {loading ? "Creating account…" : "Create Account"}
+        <button
+          type="submit"
+          className="auth-cta-button"
+          disabled={loading}
+        >
+          {loading ? "Creating account…" : "Create Your Account"}
         </button>
 
         {message ? <p className="auth-message">{message}</p> : null}
