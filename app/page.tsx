@@ -36,41 +36,34 @@ export default function HomePage() {
     >
       <HomeSummary />
 
-      <section className="card-surface card-padding space-y-3">
-        <p className="text-sm text-zinc-400">Today’s Focus</p>
-        <h2 className="text-lg font-semibold">3 Priority Moves</h2>
+      <section className="card-surface card-padding" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <p className="muted">Today’s Focus</p>
+          <h2>3 Priority Moves</h2>
+        </div>
 
-        <ul className="space-y-2 text-sm">
-          <li className="rounded-xl border border-zinc-800 px-3 py-2">
+        <ul style={{ display: "flex", flexDirection: "column", gap: 10, paddingLeft: 20, margin: 0 }}>
+          <li className="card-surface" style={{ padding: 12 }}>
             ✅ Finish your highest-impact academic task first
           </li>
-          <li className="rounded-xl border border-zinc-800 px-3 py-2">
+          <li className="card-surface" style={{ padding: 12 }}>
             📚 Complete one focused study sprint
           </li>
-          <li className="rounded-xl border border-zinc-800 px-3 py-2">
+          <li className="card-surface" style={{ padding: 12 }}>
             🎯 Move one milestone forward by 5–10%
           </li>
         </ul>
 
-        <div className="flex flex-wrap gap-2">
-          <Link
-            href="/progress"
-            className="inline-block rounded-xl bg-blue-500 px-4 py-2 font-medium hover:bg-blue-400"
-          >
+        <div className="btn-row">
+          <Link href="/progress" className="btn-primary">
             Go to Progress
           </Link>
 
-          <Link
-            href="/study"
-            className="inline-block rounded-xl border border-zinc-800 px-4 py-2 font-medium hover:bg-zinc-900"
-          >
+          <Link href="/study" className="btn-secondary">
             Go to Study
           </Link>
 
-          <Link
-            href="/community"
-            className="inline-block rounded-xl border border-zinc-800 px-4 py-2 font-medium hover:bg-zinc-900"
-          >
+          <Link href="/community" className="btn-secondary">
             Go to Community
           </Link>
         </div>
