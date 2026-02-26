@@ -3,64 +3,79 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@/lib/supabase/browser";
+import { AuthAltLink, AuthShell } from "@/components/auth/auth-shell";
 
 export default function SignInPage() {
-  const supabase = createBrowserClient();
   const router = useRouter();
+  const [supabase] = useState(() => createBrowserClient());
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [msg, setMsg] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  return (
-    <main className="min-h-screen flex items-center justify-center p-6">
-      <div className="card-surface card-padding w-full max-w-md space-y-4">
-        <h1 className="text-xl font-semibold">Sign in</h1>
-        <p className="text-sm text-zinc-400">Welcome back to The Scholars Edge.</p>
+  async function handleSignIn(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setLoading(true);
+    setMessage(null);
 
-        <div className="space-y-3">
+    const { error } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password,
+    });
+
+    if (error) {
+      setLoading(false);
+      setMessage(error.message);
+      return;
+    }
+
+    router.replace("/");
+    router.refresh();
+  }
+
+  return (
+    <AuthShell subtitle="A cleaner system for momentum, discipline, and academic growth.">
+      <form onSubmit={handleSignIn} className="auth-form">
+        <div className="auth-mini-header">
+          <p className="auth-panel-kicker">Welcome back</p>
+          <h2 className="auth-panel-title">Continue your momentum</h2>
+        </div>
+
+        <div className="section-stack">
           <input
-            className="w-full rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2"
+            type="email"
+            className="field auth-input"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            required
             autoComplete="email"
           />
+
           <input
-            className="w-full rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2"
-            placeholder="Password"
             type="password"
+            className="field auth-input"
+            placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            required
             autoComplete="current-password"
           />
         </div>
 
-        <button
-          className="w-full rounded-xl bg-blue-500 px-4 py-2 font-medium hover:bg-blue-400 disabled:opacity-60"
-          disabled={loading}
-          onClick={async () => {
-            setMsg(null);
-            setLoading(true);
-            const { error } = await supabase.auth.signInWithPassword({ email, password });
-            setLoading(false);
-            if (error) return setMsg(error.message);
-            router.push("/");
-            router.refresh();
-          }}
-        >
-          {loading ? "Signing in…" : "Sign in"}
+        <button type="submit" className="btn-primary auth-submit auth-submit-lg" disabled={loading}>
+          {loading ? "Signing in…" : "Enter The Scholars Edge"}
         </button>
 
-        <button
-          className="w-full rounded-xl border border-zinc-800 px-4 py-2 text-sm hover:bg-zinc-900"
-          onClick={() => router.push("/auth/sign-up")}
-        >
-          Create account
-        </button>
+        {message ? <p className="auth-message">{message}</p> : null}
+      </form>
 
-        {msg ? <p className="text-sm text-red-300">{msg}</p> : null}
-      </div>
-    </main>
+      <AuthAltLink
+        text="New here?"
+        href="/auth/sign-up"
+        linkLabel="Create your account"
+      />
+    </AuthShell>
   );
 }
