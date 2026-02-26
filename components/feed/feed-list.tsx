@@ -12,7 +12,7 @@ type FeedPost = {
 };
 
 export function FeedList({ reloadKey = 0 }: { reloadKey?: number }) {
-  const supabase = createBrowserClient();
+  const [supabase] = useState(() => createBrowserClient());
   const [posts, setPosts] = useState<FeedPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
@@ -39,43 +39,47 @@ export function FeedList({ reloadKey = 0 }: { reloadKey?: number }) {
   }, [reloadKey]);
 
   return (
-    <section className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h2 className="px-1 font-semibold">Community Feed</h2>
-        <button
-          className="rounded-xl border border-zinc-800 px-3 py-2 text-sm hover:bg-zinc-900"
-          onClick={loadPosts}
-        >
+    <section className="section-stack">
+      <div className="progress-list-header">
+        <div className="section-stack" style={{ gap: 4 }}>
+          <p className="premium-kicker">Community feed</p>
+          <h2 className="premium-title" style={{ fontSize: "1.7rem" }}>
+            Shared progress and reflections
+          </h2>
+        </div>
+
+        <button className="btn-secondary" onClick={loadPosts}>
           Refresh
         </button>
       </div>
 
       {loading ? (
-        <div className="card-surface card-padding text-sm text-zinc-400">
-          Loading posts…
+        <div className="premium-panel premium-panel-padding">
+          <p className="muted">Loading posts…</p>
         </div>
       ) : posts.length ? (
         posts.map((post) => (
-          <div key={post.id} className="card-surface card-padding space-y-2">
-            <div className="flex items-center justify-between gap-3">
-              <span className="text-xs uppercase tracking-wide text-zinc-400">
+          <div key={post.id} className="premium-panel premium-panel-padding community-post-card">
+            <div className="community-post-meta">
+              <span className="progress-chip">
                 {post.post_type.replace("_", " ")}
               </span>
-              <span className="text-xs text-zinc-500">
+
+              <span className="muted" style={{ fontSize: 14 }}>
                 {new Date(post.created_at).toLocaleString()}
               </span>
             </div>
 
-            <p className="text-sm text-zinc-100 whitespace-pre-wrap">{post.content}</p>
+            <p className="community-post-content">{post.content}</p>
           </div>
         ))
       ) : (
-        <div className="card-surface card-padding text-sm text-zinc-400">
-          No posts yet. Be the first to share a progress update.
+        <div className="premium-panel premium-panel-padding">
+          <p className="muted">No posts yet. Be the first to share a progress update.</p>
         </div>
       )}
 
-      {message ? <p className="text-sm text-red-300">{message}</p> : null}
+      {message ? <p className="auth-message">{message}</p> : null}
     </section>
   );
 }
