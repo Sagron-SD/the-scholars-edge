@@ -13,12 +13,22 @@ function SelectRow({
   setValue: (n: number) => void;
 }) {
   return (
-    <div className="flex items-center justify-between gap-4">
-      <label className="text-sm text-zinc-300">{label}</label>
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "1fr 110px",
+        gap: 12,
+        alignItems: "center",
+      }}
+    >
+      <label className="muted" style={{ fontSize: 15 }}>
+        {label}
+      </label>
+
       <select
         value={String(value)}
         onChange={(e) => setValue(Number(e.target.value))}
-        className="rounded-lg border border-zinc-800 bg-zinc-950 px-2 py-1 text-sm"
+        className="select-field"
       >
         {[1, 2, 3, 4, 5].map((n) => (
           <option key={n} value={n}>
@@ -102,13 +112,15 @@ export function DailyCheckinForm() {
   }
 
   return (
-    <section className="card-surface card-padding space-y-3">
-      <h3 className="font-semibold">Coaching Pulse Check</h3>
-      <p className="text-sm text-zinc-400">
-        Quick daily read on your state so your plan matches your energy.
-      </p>
+    <section className="card-surface card-padding section-stack">
+      <div className="section-stack" style={{ gap: 8 }}>
+        <h3>Coaching Pulse Check</h3>
+        <p className="muted">
+          Quick daily read on your state so your plan matches your energy.
+        </p>
+      </div>
 
-      <div className="space-y-2">
+      <div className="section-stack">
         <SelectRow label="Energy" value={energy} setValue={setEnergy} />
         <SelectRow label="Focus" value={focus} setValue={setFocus} />
         <SelectRow label="Stress" value={stress} setValue={setStress} />
@@ -116,23 +128,21 @@ export function DailyCheckinForm() {
       </div>
 
       <textarea
-        rows={3}
+        rows={4}
         value={notes}
         onChange={(e) => setNotes(e.target.value)}
-        className="w-full rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm"
+        className="textarea-field"
         placeholder="Optional note — what’s affecting your day?"
       />
 
-      <button
-        disabled={loading}
-        onClick={saveCheckin}
-        className="rounded-xl bg-blue-500 px-4 py-2 font-medium hover:bg-blue-400 disabled:opacity-60"
-      >
-        {loading ? "Saving…" : "Save Check-In"}
-      </button>
+      <div className="btn-row">
+        <button disabled={loading} onClick={saveCheckin} className="btn-primary">
+          {loading ? "Saving…" : "Save Check-In"}
+        </button>
+      </div>
 
-      {message ? <p className="text-sm text-zinc-300">{message}</p> : null}
-      {savedAt ? <p className="text-xs text-zinc-500">Saved for {savedAt}</p> : null}
+      {message ? <p className="muted">{message}</p> : null}
+      {savedAt ? <p className="muted" style={{ fontSize: 14 }}>Saved for {savedAt}</p> : null}
     </section>
   );
 }
