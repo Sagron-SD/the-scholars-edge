@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@/lib/supabase/browser";
 import { AppShell } from "@/components/app-shell";
+import { DailyCheckinForm } from "@/components/checkins/daily-checkin-form";
 
 export default function HomePage() {
   const router = useRouter();
@@ -55,6 +56,8 @@ export default function HomePage() {
           Go to Progress
         </Link>
       </section>
+
+      <DailyCheckinForm />
     </AppShell>
   );
 }
