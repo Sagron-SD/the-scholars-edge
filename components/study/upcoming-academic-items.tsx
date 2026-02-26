@@ -23,7 +23,7 @@ export function UpcomingAcademicItems({
   userId: string;
   reloadKey?: number;
 }) {
-  const supabase = createBrowserClient();
+  const [supabase] = useState(() => createBrowserClient());
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [exams, setExams] = useState<Exam[]>([]);
   const [loading, setLoading] = useState(true);
@@ -50,7 +50,9 @@ export function UpcomingAcademicItems({
     setLoading(false);
 
     if (assignmentError || examError) {
-      return setMessage(assignmentError?.message || examError?.message || "Could not load items.");
+      return setMessage(
+        assignmentError?.message || examError?.message || "Could not load items."
+      );
     }
 
     setAssignments((assignmentsData || []) as Assignment[]);
@@ -62,56 +64,72 @@ export function UpcomingAcademicItems({
   }, [reloadKey]);
 
   return (
-    <section className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h2 className="px-1 font-semibold">Upcoming Academic Items</h2>
-        <button
-          className="rounded-xl border border-zinc-800 px-3 py-2 text-sm hover:bg-zinc-900"
-          onClick={loadItems}
-        >
+    <section className="section-stack">
+      <div className="progress-list-header">
+        <div className="section-stack" style={{ gap: 4 }}>
+          <p className="premium-kicker">Academic planner</p>
+          <h2 className="premium-title" style={{ fontSize: "1.7rem" }}>
+            Upcoming academic items
+          </h2>
+        </div>
+
+        <button className="btn-secondary" onClick={loadItems}>
           Refresh
         </button>
       </div>
 
       {loading ? (
-        <div className="card-surface card-padding text-sm text-zinc-400">
-          Loading academic items…
+        <div className="premium-panel premium-panel-padding">
+          <p className="muted">Loading academic items…</p>
         </div>
       ) : (
-        <>
-          <section className="card-surface card-padding space-y-2">
-            <h3 className="font-semibold">Assignments</h3>
+        <div className="academic-items-grid">
+          <section className="premium-panel premium-panel-padding premium-stack">
+            <div className="section-stack" style={{ gap: 6 }}>
+              <p className="premium-kicker">Assignments</p>
+              <h3 className="progress-card-title" style={{ fontSize: "1.2rem" }}>
+                Coursework due soon
+              </h3>
+            </div>
+
             {assignments.length ? (
               assignments.map((a) => (
-                <div key={a.id} className="rounded-xl border border-zinc-800 p-3">
-                  <p className="font-medium">{a.title}</p>
-                  <p className="text-sm text-zinc-400">
-                    Due: {a.due_date || "—"} | Status: {a.status}
-                  </p>
+                <div key={a.id} className="academic-item-card">
+                  <div className="academic-item-top">
+                    <p className="academic-item-title">{a.title}</p>
+                    <span className="progress-status">{a.status.replace("_", " ")}</span>
+                  </div>
+                  <p className="premium-copy">Due: {a.due_date || "—"}</p>
                 </div>
               ))
             ) : (
-              <p className="text-sm text-zinc-400">No assignments yet.</p>
+              <p className="muted">No assignments yet.</p>
             )}
           </section>
 
-          <section className="card-surface card-padding space-y-2">
-            <h3 className="font-semibold">Exams</h3>
+          <section className="premium-panel premium-panel-padding premium-stack">
+            <div className="section-stack" style={{ gap: 6 }}>
+              <p className="premium-kicker">Exams</p>
+              <h3 className="progress-card-title" style={{ fontSize: "1.2rem" }}>
+                Major assessments ahead
+              </h3>
+            </div>
+
             {exams.length ? (
               exams.map((e) => (
-                <div key={e.id} className="rounded-xl border border-zinc-800 p-3">
-                  <p className="font-medium">{e.title}</p>
-                  <p className="text-sm text-zinc-400">Date: {e.exam_date || "—"}</p>
+                <div key={e.id} className="academic-item-card">
+                  <p className="academic-item-title">{e.title}</p>
+                  <p className="premium-copy">Date: {e.exam_date || "—"}</p>
                 </div>
               ))
             ) : (
-              <p className="text-sm text-zinc-400">No exams yet.</p>
+              <p className="muted">No exams yet.</p>
             )}
           </section>
-        </>
+        </div>
       )}
 
-      {message ? <p className="text-sm text-red-300">{message}</p> : null}
+      {message ? <p className="auth-message">{message}</p> : null}
     </section>
   );
 }
