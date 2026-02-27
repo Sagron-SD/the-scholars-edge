@@ -1,341 +1,250 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { createBrowserClient } from "@/lib/supabase/browser";
+import * as React from "react";
 
-type Scores = {
-  mental_clarity: number;
-  physical_vitality: number;
-  inner_alignment: number;
-  social_grounding: number;
+type Level = 1 | 2 | 3 | 4 | 5;
+
+type AlignmentState = {
+  energy: Level;
+  focus: Level;
+  stress: Level;
+  confidence: Level;
+  body: Level; // physical
+  mind: Level; // mental/emotional
+  spirit: Level; // spiritual (subtle)
+  reflection: string;
+  affirmation: string;
 };
 
-function ScoreRow({
+const DEFAULT_STATE: AlignmentState = {
+  energy: 3,
+  focus: 3,
+  stress: 3,
+  confidence: 3,
+  body: 3,
+  mind: 3,
+  spirit: 3,
+  reflection: "",
+  affirmation: "",
+};
+
+function clampLevel(n: number): Level {
+  if (n <= 1) return 1;
+  if (n >= 5) return 5;
+  return n as Level;
+}
+
+function SelectRow({
   label,
-  hint,
+  helper,
   value,
   onChange,
 }: {
   label: string;
-  hint: string;
-  value: number;
-  onChange: (v: number) => void;
+  helper: string;
+  value: Level;
+  onChange: (v: Level) => void;
 }) {
   return (
-    <div className="checkin-row">
-      <div className="checkin-row-copy">
-        <div className="checkin-row-label">{label}</div>
-        <p className="checkin-row-hint">{hint}</p>
-      </div>
+    <div className="card-surface card-padding">
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0">
+          <div className="text-white text-lg font-semibold">{label}</div>
+          <div className="text-zinc-400 text-sm mt-1">{helper}</div>
+        </div>
 
-      <select
-        className="select-field checkin-select"
-        value={String(value)}
-        onChange={(e) => onChange(Number(e.target.value))}
-      >
-        {[1, 2, 3, 4, 5].map((n) => (
-          <option key={n} value={n}>
-            {n}
-          </option>
-        ))}
-      </select>
+        <div className="shrink-0">
+          <select
+            className="input w-[92px]"
+            value={value}
+            onChange={(e) => onChange(clampLevel(Number(e.target.value)))}
+            aria-label={label}
+          >
+            <option value={1}>1</option>
+            <option value={2}>2</option>
+            <option value={3}>3</option>
+            <option value={4}>4</option>
+            <option value={5}>5</option>
+          </select>
+        </div>
+      </div>
     </div>
   );
 }
 
-export function AlignmentCheckin() {
-  const supabase = useMemo(() => createBrowserClient(), []);
+export default function AlignmentCheckin() {
+  const [state, setState] = React.useState<AlignmentState>(DEFAULT_STATE);
+  const [saving, setSaving] = React.useState(false);
+  const [saved, setSaved] = React.useState<null | "ok" | "err">(null);
 
-  const [userId, setUserId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-
-  const [scores, setScores] = useState<Scores>({
-    mental_clarity: 3,
-    physical_vitality: 3,
-    inner_alignment: 3,
-    social_grounding: 3,
-  });
-
-  const [theme, setTheme] = useState("");
-  const [reflection, setReflection] = useState("");
-  const [affirmation, setAffirmation] = useState("");
-  const [affirmationPublic, setAffirmationPublic] = useState(true);
-  const [affirmationAnonymous, setAffirmationAnonymous] = useState(true);
-
-  const [saved, setSaved] = useState(false);
-  const [msg, setMsg] = useState<string | null>(null);
-
-  const today = new Date().toISOString().slice(0, 10);
-
-  // Load user + today check-in if exists
-  useEffect(() => {
-    let active = true;
-
-    (async () => {
-      try {
-        const { data: auth } = await supabase.auth.getUser();
-        const user = auth.user;
-
-        if (!user) {
-          if (active) setLoading(false);
-          return;
-        }
-
-        if (!active) return;
-        setUserId(user.id);
-
-        const { data: existing, error } = await supabase
-          .from("alignment_checkins")
-          .select(
-            "mental_clarity, physical_vitality, inner_alignment, social_grounding, theme, reflection"
-          )
-          .eq("user_id", user.id)
-          .eq("checkin_date", today)
-          .maybeSingle();
-
-        if (!active) return;
-
-        if (!error && existing) {
-          setScores({
-            mental_clarity: existing.mental_clarity ?? 3,
-            physical_vitality: existing.physical_vitality ?? 3,
-            inner_alignment: existing.inner_alignment ?? 3,
-            social_grounding: existing.social_grounding ?? 3,
-          });
-          setTheme(existing.theme ?? "");
-          setReflection(existing.reflection ?? "");
-          setSaved(true);
-        }
-      } finally {
-        if (active) setLoading(false);
-      }
-    })();
-
-    return () => {
-      active = false;
-    };
-  }, [supabase, today]);
-
-  const average =
-    (scores.mental_clarity +
-      scores.physical_vitality +
-      scores.inner_alignment +
-      scores.social_grounding) /
-    4;
-
-  async function saveQuickCheck() {
-    if (!userId) return;
-
+  // Optional: keep this local-only for now (per your direction).
+  async function onSave() {
     setSaving(true);
-    setMsg(null);
+    setSaved(null);
 
-    const payload = {
-      user_id: userId,
-      checkin_date: today,
-      ...scores,
-      theme: theme.trim() || null,
-      // reflection is optional and can be saved later; keep it if present
-      reflection: reflection.trim() || null,
-    };
+    try {
+      // Lightweight local persistence so the UX feels “real” immediately.
+      // You can replace this later with a DB call (Supabase/Prisma/etc).
+      const payload = {
+        ...state,
+        createdAt: new Date().toISOString(),
+        kind: "alignment_checkin",
+      };
 
-    const { error } = await supabase
-      .from("alignment_checkins")
-      .upsert(payload, { onConflict: "user_id,checkin_date" });
+      const key = "tse_alignment_checkins";
+      const existingRaw =
+        typeof window !== "undefined" ? localStorage.getItem(key) : null;
+      const existing = existingRaw ? (JSON.parse(existingRaw) as any[]) : [];
+      localStorage.setItem(key, JSON.stringify([payload, ...existing].slice(0, 30)));
 
-    setSaving(false);
-
-    if (error) return setMsg(error.message);
-
-    setSaved(true);
-    setMsg("Saved ✅");
+      setSaved("ok");
+      // keep inputs (don’t wipe) — feels more premium and reflective
+    } catch {
+      setSaved("err");
+    } finally {
+      setSaving(false);
+    }
   }
 
-  async function saveAffirmation() {
-    if (!userId) return;
-
-    const text = affirmation.trim();
-    if (!text) return setMsg("Write an affirmation first.");
-
-    setSaving(true);
-    setMsg(null);
-
-    const { error } = await supabase.from("affirmations").insert({
-      user_id: userId,
-      content: text,
-      visibility: affirmationPublic ? "public" : "private",
-      is_anonymous: affirmationPublic ? affirmationAnonymous : false,
-    });
-
-    setSaving(false);
-
-    if (error) return setMsg(error.message);
-
-    setAffirmation("");
-    setMsg(affirmationPublic ? "Affirmation posted ✅" : "Affirmation saved ✅");
-  }
-
-  if (loading) {
-    return (
-      <section className="card-surface card-padding">
-        <p className="muted">Loading your alignment…</p>
-      </section>
-    );
-  }
-
-  if (!userId) {
-    return (
-      <section className="card-surface card-padding">
-        <p className="muted">Please sign in to use Alignment.</p>
-      </section>
-    );
-  }
+  const subtleSpiritPrompt =
+    "Tiny anchor (optional): one sentence that reconnects you to meaning (gratitude, intention, belief, or calm).";
 
   return (
-    <div className="section-stack">
-      {/* Quick Summary */}
-      <section className="card-surface card-padding">
-        <div className="section-stack" style={{ gap: 10 }}>
-          <p className="muted">Today’s Alignment</p>
-          <div className="flex items-end justify-between gap-4 flex-wrap">
-            <h2 className="text-2xl font-semibold" style={{ letterSpacing: "-0.02em" }}>
-              {average.toFixed(1)} / 5
-            </h2>
-            <p className="muted text-sm">
-              A quick calibration — consistency beats intensity.
-            </p>
+    <div className="mx-auto max-w-3xl px-4 pb-28 pt-8">
+      {/* Header */}
+      <div className="mb-6">
+        <div className="text-zinc-400 text-sm tracking-widest uppercase">
+          Daily Coaching Pulse
+        </div>
+        <h1 className="text-white text-4xl font-extrabold mt-2">
+          State & Alignment
+        </h1>
+        <p className="text-zinc-400 mt-2">
+          A fast check-in to keep momentum clean: mind, body, spirit — without
+          turning it clinical.
+        </p>
+      </div>
+
+      {/* Core state (fast) */}
+      <div className="grid gap-4">
+        <SelectRow
+          label="Energy"
+          helper="How resourced you feel today."
+          value={state.energy}
+          onChange={(v) => setState((s) => ({ ...s, energy: v }))}
+        />
+        <SelectRow
+          label="Focus"
+          helper="How locked in and mentally clear you are."
+          value={state.focus}
+          onChange={(v) => setState((s) => ({ ...s, focus: v }))}
+        />
+        <SelectRow
+          label="Stress"
+          helper="How much pressure you’re carrying right now."
+          value={state.stress}
+          onChange={(v) => setState((s) => ({ ...s, stress: v }))}
+        />
+        <SelectRow
+          label="Confidence"
+          helper="How strongly you believe in your ability to execute."
+          value={state.confidence}
+          onChange={(v) => setState((s) => ({ ...s, confidence: v }))}
+        />
+      </div>
+
+      {/* Wellness (holistic but performant) */}
+      <div className="mt-8 mb-4">
+        <div className="text-zinc-400 text-sm tracking-widest uppercase">
+          Wellness alignment
+        </div>
+        <h2 className="text-white text-2xl font-bold mt-2">
+          Mind • Body • Spirit
+        </h2>
+        <p className="text-zinc-400 mt-2">
+          Keep this simple. The goal is awareness → one clean adjustment.
+        </p>
+      </div>
+
+      <div className="grid gap-4">
+        <SelectRow
+          label="Body"
+          helper="Physical readiness (sleep, movement, hydration)."
+          value={state.body}
+          onChange={(v) => setState((s) => ({ ...s, body: v }))}
+        />
+        <SelectRow
+          label="Mind"
+          helper="Emotional steadiness (clarity, self-talk, regulation)."
+          value={state.mind}
+          onChange={(v) => setState((s) => ({ ...s, mind: v }))}
+        />
+        <SelectRow
+          label="Spirit"
+          helper="Meaning + inner calm (subtle, not religious)."
+          value={state.spirit}
+          onChange={(v) => setState((s) => ({ ...s, spirit: v }))}
+        />
+      </div>
+
+      {/* Reflection + affirmations (human-written) */}
+      <div className="mt-8 grid gap-4">
+        <div className="card-surface card-padding">
+          <div className="text-white text-lg font-semibold">Optional reflection</div>
+          <div className="text-zinc-400 text-sm mt-1">
+            What’s shaping your day right now — and what’s the one adjustment that would help?
           </div>
-        </div>
-      </section>
-
-      {/* Quick Check (≤ 60 sec) */}
-      <section className="card-surface card-padding section-stack">
-        <div className="section-stack" style={{ gap: 8 }}>
-          <h3>Quick Check</h3>
-          <p className="muted">
-            Rate your state in under a minute. Then move forward with clarity.
-          </p>
-        </div>
-
-        <div className="checkin-grid">
-          <ScoreRow
-            label="Mental Clarity"
-            hint="Focus, calm, and cognitive steadiness."
-            value={scores.mental_clarity}
-            onChange={(v) => setScores((s) => ({ ...s, mental_clarity: v }))}
-          />
-          <ScoreRow
-            label="Physical Vitality"
-            hint="Energy, recovery, and readiness."
-            value={scores.physical_vitality}
-            onChange={(v) => setScores((s) => ({ ...s, physical_vitality: v }))}
-          />
-          <ScoreRow
-            label="Inner Alignment"
-            hint="Values, intention, and groundedness."
-            value={scores.inner_alignment}
-            onChange={(v) => setScores((s) => ({ ...s, inner_alignment: v }))}
-          />
-          <ScoreRow
-            label="Social Grounding"
-            hint="Connection, support, and belonging."
-            value={scores.social_grounding}
-            onChange={(v) => setScores((s) => ({ ...s, social_grounding: v }))}
-          />
-        </div>
-
-        <input
-          className="field"
-          placeholder="Theme of the day (optional) — e.g., Discipline, Peace, Momentum"
-          value={theme}
-          onChange={(e) => setTheme(e.target.value)}
-        />
-
-        <div className="btn-row">
-          <button
-            type="button"
-            className="btn-primary"
-            disabled={saving}
-            onClick={saveQuickCheck}
-          >
-            {saving ? "Saving…" : saved ? "Update Today" : "Save Today"}
-          </button>
-        </div>
-
-        {msg ? <p className="muted">{msg}</p> : null}
-      </section>
-
-      {/* Optional Deepen */}
-      <section className="card-surface card-padding section-stack">
-        <div className="section-stack" style={{ gap: 8 }}>
-          <h3>Optional: Deepen</h3>
-          <p className="muted">
-            If you want to own your narrative, add a short reflection or affirmation.
-          </p>
-        </div>
-
-        <textarea
-          className="textarea-field checkin-notes"
-          rows={5}
-          placeholder="Reflection (private) — What’s real today? What matters? What’s the next right move?"
-          value={reflection}
-          onChange={(e) => setReflection(e.target.value)}
-        />
-
-        <div className="btn-row">
-          <button
-            type="button"
-            className="btn-secondary"
-            disabled={saving}
-            onClick={saveQuickCheck}
-          >
-            {saving ? "Saving…" : "Save Reflection"}
-          </button>
-        </div>
-
-        <div className="section-stack" style={{ gap: 10 }}>
           <textarea
-            className="textarea-field"
-            rows={3}
-            placeholder="Affirmation (human) — share a line someone else might need today…"
-            value={affirmation}
-            onChange={(e) => setAffirmation(e.target.value)}
+            className="textarea mt-4 w-full min-h-[110px]"
+            value={state.reflection}
+            onChange={(e) => setState((s) => ({ ...s, reflection: e.target.value }))}
+            placeholder="Ex: I’m scattered because I’m overcommitted. One adjustment: pick 1 priority move and protect 30 minutes."
           />
-
-          <div className="flex flex-wrap items-center gap-3">
-            <label className="muted text-sm" style={{ display: "flex", gap: 8, alignItems: "center" }}>
-              <input
-                type="checkbox"
-                checked={affirmationPublic}
-                onChange={(e) => setAffirmationPublic(e.target.checked)}
-              />
-              Share publicly
-            </label>
-
-            {affirmationPublic ? (
-              <label className="muted text-sm" style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                <input
-                  type="checkbox"
-                  checked={affirmationAnonymous}
-                  onChange={(e) => setAffirmationAnonymous(e.target.checked)}
-                />
-                Post anonymously
-              </label>
-            ) : null}
-          </div>
-
-          <div className="btn-row">
-            <button
-              type="button"
-              className="btn-primary"
-              disabled={saving}
-              onClick={saveAffirmation}
-            >
-              {saving ? "Saving…" : affirmationPublic ? "Post Affirmation" : "Save Affirmation"}
-            </button>
-          </div>
         </div>
-      </section>
+
+        <div className="card-surface card-padding">
+          <div className="text-white text-lg font-semibold">Affirmation (human-written)</div>
+          <div className="text-zinc-400 text-sm mt-1">
+            Write it like you’re talking to your future self — calm, direct, true.
+          </div>
+          <textarea
+            className="textarea mt-4 w-full min-h-[92px]"
+            value={state.affirmation}
+            onChange={(e) => setState((s) => ({ ...s, affirmation: e.target.value }))}
+            placeholder="Ex: I act with clarity and discipline. I don’t need perfect conditions — I need one honest step."
+          />
+          <div className="text-zinc-500 text-xs mt-3">{subtleSpiritPrompt}</div>
+        </div>
+      </div>
+
+      {/* Actions */}
+      <div className="mt-6 flex flex-col gap-3">
+        <button className="btn-primary w-full" onClick={onSave} disabled={saving}>
+          {saving ? "Saving..." : "Save Today’s Check-In"}
+        </button>
+
+        <button
+          className="btn-secondary w-full"
+          onClick={() => {
+            setState(DEFAULT_STATE);
+            setSaved(null);
+          }}
+          disabled={saving}
+        >
+          Reset
+        </button>
+
+        {saved === "ok" && (
+          <div className="text-emerald-400 text-sm mt-1">
+            Saved. Momentum stays clean when you check in daily.
+          </div>
+        )}
+        {saved === "err" && (
+          <div className="text-red-400 text-sm mt-1">
+            Couldn’t save. Try again (or we’ll wire DB persistence next).
+          </div>
+        )}
+      </div>
     </div>
   );
 }
