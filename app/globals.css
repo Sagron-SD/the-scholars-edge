@@ -2210,3 +2210,23 @@ ul {
 .btn-danger:disabled {
   opacity: 0.6;
 }
+/* =========================
+   PROFILE / PREMIUM OVERRIDES
+   ========================= */
+
+.profile-kicker {
+  color: rgba(147, 197, 253, 0.85);
+  letter-spacing: 0.22em;
+}
+
+.premium-panel {
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  background:
+    radial-gradient(circle at top left, rgba(59, 130, 246, 0.14), transparent 40%),
+    linear-gradient(180deg, rgba(24, 24, 27, 0.78), rgba(15, 23, 42, 0.72));
+  backdrop-filter: blur(16px);
+  border-radius: 28px;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
