@@ -3,21 +3,36 @@
 import Link from "next/link";
 import BottomNav from "@/components/bottom-nav";
 
+type HeroVariant = "blue" | "violet" | "emerald" | "amber";
+
 export function AppShell({
+  kicker,
   title,
   subtitle,
-  kicker = "Momentum System",
-  hideHero = false,
-  heroActions,
+  variant,
+  actions,
+  right,
   children,
 }: {
+  kicker?: string;
   title: string;
   subtitle?: string;
-  kicker?: string;
-  hideHero?: boolean;
-  heroActions?: React.ReactNode;
+  variant?: HeroVariant;
+  actions?: React.ReactNode;
+  right?: React.ReactNode;
   children: React.ReactNode;
 }) {
+  const variantClass =
+    variant === "blue"
+      ? "dashboard-summary-card-blue"
+      : variant === "violet"
+      ? "dashboard-summary-card-violet"
+      : variant === "emerald"
+      ? "dashboard-summary-card-emerald"
+      : variant === "amber"
+      ? "dashboard-summary-card-amber"
+      : "";
+
   return (
     <>
       <main className="page-shell">
@@ -36,18 +51,20 @@ export function AppShell({
             </div>
           </header>
 
-          {!hideHero ? (
-            <section className="premium-panel premium-panel-padding premium-stack">
-              <p className="premium-kicker">{kicker}</p>
+          {/* Premium Hero */}
+          <section className={`card-surface card-padding dashboard-hero ${variantClass}`}>
+            <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
+              <div className="dashboard-hero-stack">
+                {kicker ? <p className="auth-brand-kicker">{kicker}</p> : null}
+                <h1 className="dashboard-hero-title">{title}</h1>
+                {subtitle ? <p className="dashboard-hero-copy">{subtitle}</p> : null}
 
-              <div className="premium-stack" style={{ gap: 10 }}>
-                <h1 className="premium-title">{title}</h1>
-                {subtitle ? <p className="premium-copy">{subtitle}</p> : null}
+                {actions ? <div className="btn-row">{actions}</div> : null}
               </div>
 
-              {heroActions ? <div className="btn-row">{heroActions}</div> : null}
-            </section>
-          ) : null}
+              {right ? <div className="w-full md:w-[320px]">{right}</div> : null}
+            </div>
+          </section>
 
           {children}
         </div>
