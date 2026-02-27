@@ -1,13 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { AppShell } from "@/components/app-shell";
 import { createBrowserClient } from "@/lib/supabase/browser";
 import { SignOutButton } from "@/components/sign-out-button";
 import { ProfileCard } from "@/components/profile/profile-card";
-import { AppShell } from "@/components/app-shell";
-
-// If you're standardizing all pages on primitives instead of AppShell,
-// you can swap AppShell out later. This version keeps it stable.
 
 type Profile = {
   full_name: string | null;
@@ -45,11 +42,7 @@ export default function ProfilePage() {
 
         setLoading(false);
 
-        if (error) {
-          setMessage(error.message);
-          return;
-        }
-
+        if (error) return setMessage(error.message);
         setProfile((data || null) as Profile | null);
       } catch {
         if (!active) return;
@@ -66,19 +59,27 @@ export default function ProfilePage() {
   return (
     <AppShell title="Profile" subtitle="Your identity, settings, and streak.">
       {loading ? (
-        <section className="card-surface card-padding text-sm text-zinc-400">
-          Loading profile…
+        <section className="premium-panel premium-panel-padding">
+          <p className="premium-copy">Loading profile…</p>
         </section>
       ) : (
         <ProfileCard profile={profile} />
       )}
 
-      <section className="card-surface card-padding space-y-3">
-        <h2 className="font-semibold">Account Actions</h2>
-        <p className="text-sm text-zinc-400">
-          More profile editing controls are coming next.
-        </p>
-        <SignOutButton />
+      <section className="premium-panel premium-panel-padding premium-stack">
+        <div className="premium-stack" style={{ gap: 10 }}>
+          <p className="premium-kicker">Account</p>
+          <h2 className="premium-title" style={{ fontSize: "1.8rem" }}>
+            Account Actions
+          </h2>
+          <p className="premium-copy">
+            More profile editing controls are coming next.
+          </p>
+        </div>
+
+        <div className="btn-row">
+          <SignOutButton />
+        </div>
       </section>
 
       {message ? <p className="text-sm text-red-300">{message}</p> : null}
