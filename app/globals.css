@@ -50,7 +50,7 @@ body {
   min-height: 100vh;
 }
 
-/* Optional subtle page backdrop */
+/* Subtle page backdrop */
 body {
   background:
     radial-gradient(circle at 15% 0%, rgba(34, 197, 94, 0.10), transparent 38%),
