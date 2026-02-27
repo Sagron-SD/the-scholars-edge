@@ -28,7 +28,7 @@ export function ProfileCard({ profile }: { profile: Profile | null }) {
   const badge = initials(displayName);
 
   return (
-    <section className="card-surface card-padding">
+    <section className="profile-panel profile-panel-padding">
       <div className="profile-hero">
         <div className="profile-identity">
           <div className="profile-kicker">
@@ -55,22 +55,18 @@ export function ProfileCard({ profile }: { profile: Profile | null }) {
         <div className="profile-tile">
           <div className="label">Persona</div>
           <div className="value">{profile.persona_type || "Not set"}</div>
-          <div className="hint">
-            Your coaching lens for goals, routines, and momentum.
-          </div>
+          <div className="hint">Your coaching lens for goals, routines, and momentum.</div>
         </div>
 
         <div className="profile-tile">
           <div className="label">School Level</div>
           <div className="value">{profile.school_level || "Not set"}</div>
-          <div className="hint">
-            Used to shape study structure and planning cadence.
-          </div>
+          <div className="hint">Used to shape study structure and planning cadence.</div>
         </div>
 
-        <div className="profile-tile span-2">
-          <div className="label">What’s next</div>
-          <div className="value">Next patch</div>
+        <div className="profile-tile profile-span-2">
+          <div className="label">What’s Next</div>
+          <div className="value">Next Patch</div>
           <div className="hint">
             Profile editing, streaks, and a wellness baseline (sleep, hydration,
             movement) that ties into your daily coaching.
