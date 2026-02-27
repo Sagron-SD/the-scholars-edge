@@ -2400,3 +2400,57 @@ ul {
   letter-spacing: -0.04em;
   color: #f8fafc;
 }
+/* =========================
+   FINAL POLISH SLATE
+   ========================= */
+
+/* 1) Subtle “danger” button (use for Sign out) */
+.btn-danger-subtle {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: rgba(248, 113, 113, 1);
+}
+
+.btn-danger-subtle:hover {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.32);
+}
+
+.btn-danger-subtle:active {
+  background: rgba(239, 68, 68, 0.16);
+  border-color: rgba(239, 68, 68, 0.38);
+}
+
+.btn-danger-subtle:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.22);
+}
+
+
+/* 2) Spacing utility (consistent vertical rhythm) */
+.stack-6 {
+  display: grid;
+  gap: 24px;
+}
+
+
+/* 3) Premium “alive” card hover (optional but recommended) */
+.card-surface {
+  transition: transform 200ms ease, box-shadow 200ms ease;
+  will-change: transform, box-shadow;
+}
+
+.card-surface:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .card-surface {
+    transition: none;
+  }
+  .card-surface:hover {
+    transform: none;
+  }
+}
