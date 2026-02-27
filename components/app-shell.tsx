@@ -3,35 +3,37 @@
 import Link from "next/link";
 import BottomNav from "@/components/bottom-nav";
 
-type HeroVariant = "blue" | "violet" | "emerald" | "amber";
+type HeroVariant = "blue" | "violet" | "emerald" | "amber" | "neutral";
 
 export function AppShell({
-  kicker,
   title,
   subtitle,
-  variant,
+  kicker,
+  variant = "blue",
   actions,
   right,
+  hideHero = false,
   children,
 }: {
-  kicker?: string;
   title: string;
   subtitle?: string;
+  kicker?: string;
   variant?: HeroVariant;
   actions?: React.ReactNode;
   right?: React.ReactNode;
+  hideHero?: boolean;
   children: React.ReactNode;
 }) {
-  const variantClass =
-    variant === "blue"
-      ? "dashboard-summary-card-blue"
-      : variant === "violet"
+  const heroClass =
+    variant === "violet"
       ? "dashboard-summary-card-violet"
       : variant === "emerald"
-      ? "dashboard-summary-card-emerald"
-      : variant === "amber"
-      ? "dashboard-summary-card-amber"
-      : "";
+        ? "dashboard-summary-card-emerald"
+        : variant === "amber"
+          ? "dashboard-summary-card-amber"
+          : variant === "neutral"
+            ? ""
+            : "dashboard-summary-card-blue";
 
   return (
     <>
@@ -51,20 +53,31 @@ export function AppShell({
             </div>
           </header>
 
-          {/* Premium Hero */}
-          <section className={`card-surface card-padding dashboard-hero ${variantClass}`}>
-            <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
+          {/* HERO (premium) */}
+          {!hideHero ? (
+            <section className={`card-surface card-padding dashboard-hero ${heroClass}`}>
               <div className="dashboard-hero-stack">
-                {kicker ? <p className="auth-brand-kicker">{kicker}</p> : null}
-                <h1 className="dashboard-hero-title">{title}</h1>
-                {subtitle ? <p className="dashboard-hero-copy">{subtitle}</p> : null}
+                {kicker ? <p className="premium-kicker">{kicker}</p> : null}
+
+                <div className="flex items-start justify-between gap-4">
+                  <div className="space-y-3">
+                    <h1 className="dashboard-hero-title">{title}</h1>
+                    {subtitle ? <p className="dashboard-hero-copy">{subtitle}</p> : null}
+                  </div>
+
+                  {right ? <div className="shrink-0">{right}</div> : null}
+                </div>
 
                 {actions ? <div className="btn-row">{actions}</div> : null}
               </div>
-
-              {right ? <div className="w-full md:w-[320px]">{right}</div> : null}
-            </div>
-          </section>
+            </section>
+          ) : (
+            // fallback classic header (keeps old spacing if you ever want no hero)
+            <section className="page-header">
+              <h1 className="page-title">{title}</h1>
+              {subtitle ? <p className="page-subtitle">{subtitle}</p> : null}
+            </section>
+          )}
 
           {children}
         </div>
