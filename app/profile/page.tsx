@@ -57,7 +57,12 @@ export default function ProfilePage() {
   }, [supabase]);
 
   return (
-    <AppShell title="Profile" subtitle="Your identity, settings, and streak.">
+    <AppShell
+      kicker="Success Coaching • Academic Growth • Wellness"
+      title="Profile"
+      subtitle="Your identity, settings, and streak."
+      variant="blue"
+    >
       {loading ? (
         <section className="premium-panel premium-panel-padding">
           <p className="premium-copy">Loading profile…</p>
@@ -72,9 +77,7 @@ export default function ProfilePage() {
           <h2 className="premium-title" style={{ fontSize: "1.8rem" }}>
             Account Actions
           </h2>
-          <p className="premium-copy">
-            More profile editing controls are coming next.
-          </p>
+          <p className="premium-copy">More profile editing controls are coming next.</p>
         </div>
 
         <div className="btn-row">
