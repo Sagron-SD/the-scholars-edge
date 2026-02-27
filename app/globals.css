@@ -1042,3 +1042,127 @@ ul {
     align-items: flex-start;
   }
 }
+/* =========================
+   PROFILE — Premium Patch
+   ========================= */
+
+.profile-hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.profile-identity {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+.profile-kicker {
+  font-size: 12px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(226, 232, 240, 0.78);
+}
+
+.profile-name {
+  font-size: 34px;
+  line-height: 1.05;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.profile-handle {
+  margin-top: -6px;
+  font-size: 16px;
+  color: rgba(226, 232, 240, 0.72);
+}
+
+.profile-blurb {
+  font-size: 15px;
+  line-height: 1.5;
+  color: rgba(226, 232, 240, 0.72);
+  max-width: 72ch;
+}
+
+.profile-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: rgba(2, 6, 23, 0.55);
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  color: rgba(226, 232, 240, 0.9);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
+}
+
+.profile-grid {
+  margin-top: 10px;
+  display: grid;
+  gap: 12px;
+}
+
+@media (min-width: 768px) {
+  .profile-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .profile-grid .span-2 {
+    grid-column: span 2;
+  }
+}
+
+.profile-tile {
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: rgba(2, 6, 23, 0.35);
+  padding: 14px;
+}
+
+.profile-tile .label {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(226, 232, 240, 0.6);
+}
+
+.profile-tile .value {
+  margin-top: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  color: rgba(226, 232, 240, 0.92);
+}
+
+.profile-tile .hint {
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: rgba(226, 232, 240, 0.62);
+}
+
+/* make the sign out match the premium buttons */
+.btn-danger {
+  border-radius: 14px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  color: rgba(254, 202, 202, 0.95);
+  background: rgba(127, 29, 29, 0.25);
+  transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+}
+
+.btn-danger:hover {
+  background: rgba(127, 29, 29, 0.35);
+  border-color: rgba(248, 113, 113, 0.55);
+}
+
+.btn-danger:active {
+  transform: translateY(1px);
+}
+
+.btn-danger:disabled {
+  opacity: 0.6;
+}
