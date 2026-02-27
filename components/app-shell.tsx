@@ -1,16 +1,26 @@
 "use client";
 
+import type { ReactNode } from "react";
 import Link from "next/link";
 import BottomNav from "@/components/bottom-nav";
+import { HeroSection } from "@/components/hero-section";
 
 export function AppShell({
   title,
   subtitle,
+  kicker,
+  right,
+  actions,
+  variant = "default",
   children,
 }: {
-  title: string;
-  subtitle?: string;
-  children: React.ReactNode;
+  title: ReactNode;
+  subtitle?: ReactNode;
+  kicker?: string;
+  right?: ReactNode;
+  actions?: ReactNode;
+  variant?: "default" | "blue" | "violet" | "emerald" | "amber";
+  children: ReactNode;
 }) {
   return (
     <>
@@ -30,10 +40,14 @@ export function AppShell({
             </div>
           </header>
 
-          <section className="page-header">
-            <h1 className="page-title">{title}</h1>
-            {subtitle ? <p className="page-subtitle">{subtitle}</p> : null}
-          </section>
+          <HeroSection
+            kicker={kicker}
+            title={title}
+            subtitle={subtitle}
+            right={right}
+            actions={actions}
+            variant={variant}
+          />
 
           {children}
         </div>
