@@ -3,82 +3,51 @@
 @tailwind utilities;
 
 /* =========================
-   THEME TOKENS (LIGHT DEFAULT)
+   FORCE LIGHT THEME TOKENS
+   Even if html has class="dark"
    ========================= */
 
-:root {
+:root,
+html,
+html.dark,
+body {
   color-scheme: light;
 
-  /* Core surfaces */
   --bg: #ffffff;
   --panel: rgba(255, 255, 255, 0.86);
   --panel-solid: #ffffff;
 
-  /* Borders + text */
   --border: rgba(15, 23, 42, 0.12);
   --muted: rgba(15, 23, 42, 0.62);
   --text: rgba(15, 23, 42, 0.92);
 
-  /* Primary brand (marketable emerald green) */
+  /* Vibrant marketable green (Emerald) */
   --primary: #22c55e;
   --primary-hover: #16a34a;
 
-  /* Accents */
   --ring: rgba(34, 197, 94, 0.22);
   --shadow: rgba(2, 6, 23, 0.08);
   --shadow-strong: rgba(2, 6, 23, 0.12);
 
-  /* Soft tints */
   --primary-soft: rgba(34, 197, 94, 0.12);
   --primary-soft-2: rgba(34, 197, 94, 0.18);
-}
-
-* {
-  box-sizing: border-box;
 }
 
 html,
 body {
   margin: 0;
   padding: 0;
-  background: var(--bg);
-  color: var(--text);
+  background: var(--bg) !important;
+  color: var(--text) !important;
   font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-}
-
-body {
   min-height: 100vh;
 }
 
-/* Subtle page backdrop */
 body {
   background:
     radial-gradient(circle at 15% 0%, rgba(34, 197, 94, 0.10), transparent 38%),
     radial-gradient(circle at 80% 10%, rgba(34, 197, 94, 0.06), transparent 44%),
-    #ffffff;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-button,
-input,
-select,
-textarea {
-  font: inherit;
-}
-
-h1,
-h2,
-h3,
-p {
-  margin: 0;
-}
-
-ul {
-  margin: 0;
+    #ffffff !important;
 }
 
 /* =========================
