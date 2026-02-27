@@ -20,66 +20,47 @@ export default function ProfilePage() {
   const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    let active = true;
-
     (async () => {
-      try {
-        const { data: auth } = await supabase.auth.getUser();
-        const user = auth.user;
+      const { data: auth } = await supabase.auth.getUser();
+      const user = auth.user;
 
-        if (!user) {
-          if (active) setLoading(false);
-          return;
-        }
-
-        const { data, error } = await supabase
-          .from("profiles")
-          .select("full_name, username, school_level, persona_type")
-          .eq("id", user.id)
-          .maybeSingle();
-
-        if (!active) return;
-
+      if (!user) {
         setLoading(false);
-
-        if (error) return setMessage(error.message);
-        setProfile((data || null) as Profile | null);
-      } catch {
-        if (!active) return;
-        setLoading(false);
-        setMessage("Could not load profile.");
+        return;
       }
-    })();
 
-    return () => {
-      active = false;
-    };
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("full_name, username, school_level, persona_type")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      setLoading(false);
+
+      if (error) return setMessage(error.message);
+      setProfile((data || null) as Profile | null);
+    })();
   }, [supabase]);
 
   return (
     <AppShell
-      kicker="Success Coaching • Academic Growth • Wellness"
       title="Profile"
       subtitle="Your identity, settings, and streak."
-      variant="blue"
+      kicker="Success Coaching • Academic Growth • Wellness"
+      hideHero
     >
       {loading ? (
-        <section className="premium-panel premium-panel-padding">
-          <p className="premium-copy">Loading profile…</p>
+        <section className="card-surface card-padding text-sm text-zinc-400">
+          Loading profile…
         </section>
       ) : (
         <ProfileCard profile={profile} />
       )}
 
       <section className="premium-panel premium-panel-padding premium-stack">
-        <div className="premium-stack" style={{ gap: 10 }}>
-          <p className="premium-kicker">Account</p>
-          <h2 className="premium-title" style={{ fontSize: "1.8rem" }}>
-            Account Actions
-          </h2>
-          <p className="premium-copy">More profile editing controls are coming next.</p>
-        </div>
-
+        <p className="premium-kicker">Account</p>
+        <h2 className="premium-title">Account Actions</h2>
+        <p className="premium-copy">More profile editing controls are coming next.</p>
         <div className="btn-row">
           <SignOutButton />
         </div>
