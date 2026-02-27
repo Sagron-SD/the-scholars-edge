@@ -7,70 +7,71 @@ type Profile = {
   persona_type: string | null;
 };
 
-function initials(name: string) {
-  const parts = name.trim().split(/\s+/).slice(0, 2);
-  const a = parts[0]?.[0] ?? "S";
-  const b = parts[1]?.[0] ?? "";
-  return (a + b).toUpperCase();
+function initialsFromName(name: string) {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return "SE";
+  const first = parts[0]?.[0] ?? "S";
+  const last = parts.length > 1 ? parts[parts.length - 1]?.[0] : "";
+  return (first + last).toUpperCase();
 }
 
 export function ProfileCard({ profile }: { profile: Profile | null }) {
   if (!profile) {
     return (
-      <section className="card-surface card-padding text-sm text-zinc-400">
-        No profile data yet.
+      <section className="premium-panel premium-panel-padding">
+        <p className="premium-copy">No profile data yet.</p>
       </section>
     );
   }
 
   const displayName = profile.full_name || "Scholar";
   const handle = profile.username ? `@${profile.username}` : "@scholar";
-  const badge = initials(displayName);
+  const avatar = initialsFromName(displayName);
 
   return (
-    <section className="profile-panel profile-panel-padding">
+    <section className="premium-panel premium-panel-padding premium-stack">
       <div className="profile-hero">
         <div className="profile-identity">
-          <div className="profile-kicker">
-            Success Coaching • Academic Growth • Wellness
-          </div>
+          <p className="profile-kicker">
+            SUCCESS COACHING • ACADEMIC GROWTH • WELLNESS
+          </p>
 
           <div>
-            <div className="profile-name">{displayName}</div>
-            <div className="profile-handle">{handle}</div>
+            <h2 className="profile-name">{displayName}</h2>
+            <p className="profile-handle">{handle}</p>
           </div>
 
-          <div className="profile-blurb">
+          <p className="profile-blurb">
             This is the identity that anchors your system. We’ll use it to tailor
             your coaching prompts and planning defaults.
-          </div>
+          </p>
         </div>
 
         <div className="profile-avatar" aria-label="Profile avatar">
-          {badge}
+          {avatar}
         </div>
       </div>
 
       <div className="profile-grid">
         <div className="profile-tile">
-          <div className="label">Persona</div>
-          <div className="value">{profile.persona_type || "Not set"}</div>
-          <div className="hint">Your coaching lens for goals, routines, and momentum.</div>
+          <p className="label">Persona</p>
+          <p className="value">{profile.persona_type || "Not set"}</p>
+          <p className="hint">Your coaching lens for goals, routines, and momentum.</p>
         </div>
 
         <div className="profile-tile">
-          <div className="label">School Level</div>
-          <div className="value">{profile.school_level || "Not set"}</div>
-          <div className="hint">Used to shape study structure and planning cadence.</div>
+          <p className="label">School level</p>
+          <p className="value">{profile.school_level || "Not set"}</p>
+          <p className="hint">Used to shape study structure and planning cadence.</p>
         </div>
 
-        <div className="profile-tile profile-span-2">
-          <div className="label">What’s Next</div>
-          <div className="value">Next Patch</div>
-          <div className="hint">
+        <div className="profile-tile span-2">
+          <p className="label">What’s next</p>
+          <p className="value">Next Patch</p>
+          <p className="hint">
             Profile editing, streaks, and a wellness baseline (sleep, hydration,
             movement) that ties into your daily coaching.
-          </div>
+          </p>
         </div>
       </div>
     </section>
