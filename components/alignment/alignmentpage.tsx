@@ -1,323 +1,298 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-type Score = 1 | 2 | 3 | 4 | 5;
+type CheckInValue = 1 | 2 | 3 | 4 | 5;
 
-const scoreOptions: Score[] = [1, 2, 3, 4, 5];
+type AlignmentEntry = {
+  createdAt: string; // ISO
+  mental: CheckInValue;
+  physical: CheckInValue;
+  inner: CheckInValue; // spiritual (non-religious language)
+  social: CheckInValue; // interpersonal health
+  notes?: string;
+};
 
-function labelForScore(n: Score) {
-  switch (n) {
-    case 1:
-      return "Very low";
-    case 2:
-      return "Low";
-    case 3:
-      return "Neutral";
-    case 4:
-      return "Good";
-    case 5:
-      return "Excellent";
-    default:
-      return "";
-  }
+const STORAGE_KEY = "tse_alignment_entries_v1";
+
+function clampToFive(n: number): CheckInValue {
+  if (n <= 1) return 1;
+  if (n === 2) return 2;
+  if (n === 3) return 3;
+  if (n === 4) return 4;
+  return 5;
+}
+
+function formatWhen(iso: string) {
+  const d = new Date(iso);
+  return d.toLocaleString(undefined, {
+    month: "numeric",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
+function computeMomentum(entry: AlignmentEntry) {
+  // Lightweight, non-clinical “momentum” signal: average * 20 = 20–100
+  const avg = (entry.mental + entry.physical + entry.inner + entry.social) / 4;
+  return Math.round(avg * 20);
 }
 
 export default function AlignmentPage() {
-  const [energy, setEnergy] = useState<Score>(3);
-  const [focus, setFocus] = useState<Score>(3);
-  const [stress, setStress] = useState<Score>(3);
-  const [confidence, setConfidence] = useState<Score>(3);
+  const [mental, setMental] = useState<CheckInValue>(3);
+  const [physical, setPhysical] = useState<CheckInValue>(3);
+  const [inner, setInner] = useState<CheckInValue>(3);
+  const [social, setSocial] = useState<CheckInValue>(3);
+  const [notes, setNotes] = useState("");
+  const [entries, setEntries] = useState<AlignmentEntry[]>([]);
+  const [savedPulse, setSavedPulse] = useState(false);
 
-  // Wellness add-on (non-clinical / coaching lens)
-  const [movement, setMovement] = useState<Score>(3);
-  const [nourishment, setNourishment] = useState<Score>(3);
-  const [presence, setPresence] = useState<Score>(3); // mindfulness / calm
-  const [connection, setConnection] = useState<Score>(3); // social connectedness
-  const [reflection, setReflection] = useState("");
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as AlignmentEntry[];
+      if (Array.isArray(parsed)) setEntries(parsed);
+    } catch {
+      // ignore
+    }
+  }, []);
 
-  // optional: subtle “faith sprinkles” as affirmation framing
-  const [affirmation, setAffirmation] = useState("");
-
-  const momentum = useMemo(() => {
-    // simple baseline momentum score 0–100, can evolve later
-    const avg =
-      (energy +
-        focus +
-        (6 - stress) + // invert stress so lower stress helps momentum
-        confidence +
-        movement +
-        nourishment +
-        presence +
-        connection) /
-      8;
-
-    // avg is 1..5-ish, map to 0..100
-    const score = Math.round(((avg - 1) / 4) * 100);
-    return Math.max(0, Math.min(100, score));
-  }, [energy, focus, stress, confidence, movement, nourishment, presence, connection]);
-
-  function handleSave() {
-    // Replace this with your DB write (Supabase / server action / API route)
-    // For now it’s a safe “still works” placeholder.
-    const payload = {
-      createdAt: new Date().toISOString(),
-      energy,
-      focus,
-      stress,
-      confidence,
-      wellness: {
-        movement,
-        nourishment,
-        presence,
-        connection,
-      },
-      reflection: reflection.trim(),
-      affirmation: affirmation.trim(),
-      momentum,
-    };
-
-    console.log("Alignment check-in saved:", payload);
-    alert("Saved ✅ (placeholder). Wire to DB next.");
+  function persist(next: AlignmentEntry[]) {
+    setEntries(next);
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    } catch {
+      // ignore
+    }
   }
+
+  const todayHint = useMemo(() => {
+    // Subtle faith sprinkle without religion: “anchor / gratitude / intention”
+    const prompts = [
+      "What’s one thing you can control in the next 24 hours?",
+      "Name one win (even small) that proves you’re moving.",
+      "What would ‘aligned’ look like for the next hour?",
+      "What thought do you need to release to move forward?",
+      "What’s one gratitude that anchors you today?",
+    ];
+    return prompts[Math.floor(Math.random() * prompts.length)];
+  }, []);
+
+  const currentPreviewMomentum = useMemo(() => {
+    const e: AlignmentEntry = {
+      createdAt: new Date().toISOString(),
+      mental,
+      physical,
+      inner,
+      social,
+      notes: notes.trim() || undefined,
+    };
+    return computeMomentum(e);
+  }, [mental, physical, inner, social, notes]);
+
+  function save() {
+    const entry: AlignmentEntry = {
+      createdAt: new Date().toISOString(),
+      mental,
+      physical,
+      inner,
+      social,
+      notes: notes.trim() || undefined,
+    };
+    const next = [entry, ...entries].slice(0, 30); // keep last 30 for now
+    persist(next);
+
+    setSavedPulse(true);
+    window.setTimeout(() => setSavedPulse(false), 700);
+
+    // reset notes only (ratings stay, so it feels fast day-to-day)
+    setNotes("");
+  }
+
+  const latest = entries[0];
+  const latestMomentum = latest ? computeMomentum(latest) : null;
 
   return (
     <main className="page-shell">
       <div className="page-stack">
-        <header className="page-header">
-          <h1 className="page-title">State &amp; Alignment</h1>
-          <p className="page-subtitle">
-            Quick check-in. Own the narrative. Build momentum.
-          </p>
-        </header>
-
-        {/* HERO / Momentum */}
         <section className="card-surface card-padding dashboard-hero">
-          <div className="dashboard-hero-stack">
-            <div>
-              <div className="muted" style={{ fontWeight: 700, letterSpacing: "0.14em" }}>
-                DAILY COACHING PULSE
+          <div className="hero-inner">
+            <div className="hero-copy">
+              <p className="hero-kicker">STATE &amp; ALIGNMENT</p>
+              <h1 className="hero-title">Own the narrative.</h1>
+              <p className="hero-subtitle">
+                A fast daily check-in that keeps you honest, calm, and moving.
+                <br />
+                <span className="muted">60 seconds. No clinical vibe. Just clarity.</span>
+              </p>
+
+              <div className="hero-actions">
+                <button className="btn-primary" onClick={save}>
+                  Save check-in
+                </button>
+                <a className="btn-secondary" href="/community">
+                  Interpersonal Corner
+                </a>
               </div>
-              <div className="dashboard-hero-title" style={{ marginTop: 10 }}>
-                Check in with your current state
-              </div>
-              <p className="dashboard-hero-copy" style={{ marginTop: 10 }}>
-                Your strongest growth systems respond to how you actually feel — then
-                translate it into the next right move.
+
+              <p className="muted" style={{ marginTop: 10 }}>
+                Prompt: <span style={{ color: "#cbd5e1" }}>{todayHint}</span>
               </p>
             </div>
 
-            <div className="dashboard-summary-grid">
-              <div className="dashboard-summary-card dashboard-summary-card-blue">
-                <div className="dashboard-summary-label">Momentum score</div>
-                <div className="dashboard-summary-value">{momentum}</div>
-              </div>
-
-              <div className="dashboard-summary-card dashboard-summary-card-violet">
-                <div className="dashboard-summary-label">Today’s mode</div>
-                <div className="dashboard-summary-value">
-                  {momentum >= 75 ? "Locked in" : momentum >= 50 ? "Steady" : "Rebuild"}
+            <div className="hero-right">
+              <div className="hero-chip">
+                <div className="hero-chip-label">Momentum</div>
+                <div className="hero-chip-value">{currentPreviewMomentum}</div>
+                <div className="muted" style={{ marginTop: 8, fontSize: 12 }}>
+                  Preview score
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Core state */}
         <section className="card-surface card-padding">
-          <div className="section-stack">
+          <div className="progress-list-header">
             <div>
-              <div className="muted" style={{ fontWeight: 700, letterSpacing: "0.14em" }}>
-                CORE STATE
-              </div>
-              <h2 style={{ marginTop: 8, fontSize: "1.6rem", fontWeight: 900 }}>
-                Quick ratings (under 60 seconds)
+              <h2 className="page-title" style={{ fontSize: "1.35rem" }}>
+                Today’s check-in
               </h2>
-              <p className="muted" style={{ marginTop: 8, lineHeight: 1.6 }}>
-                No clinical framing — just clarity. Choose what’s true right now.
-              </p>
+              <p className="muted">Quick, reflective, performance-aware.</p>
             </div>
 
-            <div className="checkin-grid">
-              <CheckRow
-                label="Energy"
-                hint="How resourced you feel today."
-                value={energy}
-                onChange={setEnergy}
-              />
-              <CheckRow
-                label="Focus"
-                hint="How mentally clear and locked in you are."
-                value={focus}
-                onChange={setFocus}
-              />
-              <CheckRow
-                label="Stress"
-                hint="How much pressure you’re carrying right now."
-                value={stress}
-                onChange={setStress}
-              />
-              <CheckRow
-                label="Confidence"
-                hint="How strongly you believe you can execute."
-                value={confidence}
-                onChange={setConfidence}
-              />
+            <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+              {savedPulse ? (
+                <span className="progress-chip">Saved ✅</span>
+              ) : latest ? (
+                <span className="progress-status">
+                  Last saved: {formatWhen(latest.createdAt)}
+                </span>
+              ) : (
+                <span className="progress-status">No entries yet</span>
+              )}
             </div>
           </div>
-        </section>
 
-        {/* Wellness (holistic / coaching lens) */}
-        <section className="card-surface card-padding">
-          <div className="section-stack">
-            <div>
-              <div className="muted" style={{ fontWeight: 700, letterSpacing: "0.14em" }}>
-                WELLNESS BASELINE
-              </div>
-              <h2 style={{ marginTop: 8, fontSize: "1.6rem", fontWeight: 900 }}>
-                Whole-person alignment
-              </h2>
-              <p className="muted" style={{ marginTop: 8, lineHeight: 1.6 }}>
-                Subtle, non-clinical metrics that keep you grounded: body, mind, spirit,
-                and connection.
-              </p>
-            </div>
-
-            <div className="checkin-grid">
-              <CheckRow
-                label="Movement"
-                hint="Did you move your body in a way that serves you?"
-                value={movement}
-                onChange={setMovement}
-              />
-              <CheckRow
-                label="Nourishment"
-                hint="Did you fuel in a supportive way (food + hydration)?"
-                value={nourishment}
-                onChange={setNourishment}
-              />
-              <CheckRow
-                label="Presence"
-                hint="Breathing / mindfulness / calm in the nervous system."
-                value={presence}
-                onChange={setPresence}
-              />
-              <CheckRow
-                label="Connection"
-                hint="How connected you feel to people today."
-                value={connection}
-                onChange={setConnection}
-              />
-            </div>
+          <div className="checkin-grid" style={{ marginTop: 14 }}>
+            <CheckRow
+              label="Mental"
+              hint="Focus, mood, stress, clarity."
+              value={mental}
+              onChange={(v) => setMental(clampToFive(v))}
+            />
+            <CheckRow
+              label="Physical"
+              hint="Energy, sleep, movement, hydration."
+              value={physical}
+              onChange={(v) => setPhysical(clampToFive(v))}
+            />
+            <CheckRow
+              label="Inner"
+              hint="Presence, grounding, breath, gratitude."
+              value={inner}
+              onChange={(v) => setInner(clampToFive(v))}
+            />
+            <CheckRow
+              label="Social"
+              hint="Connection, communication, support."
+              value={social}
+              onChange={(v) => setSocial(clampToFive(v))}
+            />
           </div>
-        </section>
 
-        {/* Reflection + affirmation */}
-        <section className="card-surface card-padding">
-          <div className="section-stack">
-            <div>
-              <div className="muted" style={{ fontWeight: 700, letterSpacing: "0.14em" }}>
-                NARRATIVE
-              </div>
-              <h2 style={{ marginTop: 8, fontSize: "1.6rem", fontWeight: 900 }}>
-                Optional reflection
-              </h2>
-              <p className="muted" style={{ marginTop: 8, lineHeight: 1.6 }}>
-                One sentence is enough: what is shaping your day right now?
-              </p>
-            </div>
-
+          <div style={{ marginTop: 14 }}>
+            <label className="muted" style={{ display: "block", marginBottom: 8 }}>
+              Notes (optional) — keep it real, keep it short.
+            </label>
             <textarea
               className="textarea-field checkin-notes"
-              placeholder="Optional reflection — what is shaping your day right now?"
-              value={reflection}
-              onChange={(e) => setReflection(e.target.value)}
               rows={4}
+              placeholder="What mattered today? What’s the next right move?"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
             />
+          </div>
 
-            <div>
-              <div className="muted" style={{ fontWeight: 700, letterSpacing: "0.14em" }}>
-                AFFIRMATION (OPTIONAL)
-              </div>
-              <p className="muted" style={{ marginTop: 8, lineHeight: 1.6 }}>
-                Keep it human. Quiet conviction. (Subtle faith-friendly language is welcome —
-                not religious-specific.)
-              </p>
-            </div>
-
-            <input
-              className="field"
-              placeholder='Ex: "I move with purpose. I am guided. I do the next right thing."'
-              value={affirmation}
-              onChange={(e) => setAffirmation(e.target.value)}
-            />
+          <div className="btn-row" style={{ marginTop: 14 }}>
+            <button className="btn-primary" onClick={save}>
+              Save check-in
+            </button>
+            <a className="btn-ghost" href="/progress">
+              View momentum over time →
+            </a>
           </div>
         </section>
 
-        {/* Save */}
         <section className="card-surface card-padding">
-          <div className="btn-row">
-            <button className="btn-primary" onClick={handleSave}>
-              Save Today&apos;s Check-In
-            </button>
-            <button
-              className="btn-secondary"
-              onClick={() => {
-                setEnergy(3);
-                setFocus(3);
-                setStress(3);
-                setConfidence(3);
-                setMovement(3);
-                setNourishment(3);
-                setPresence(3);
-                setConnection(3);
-                setReflection("");
-                setAffirmation("");
-              }}
-            >
-              Reset
-            </button>
+          <h2 className="page-title" style={{ fontSize: "1.35rem" }}>
+            Recent check-ins
+          </h2>
+          <p className="muted">Your private log (for now). We’ll add sharing controls later.</p>
+
+          <div className="section-stack" style={{ marginTop: 14 }}>
+            {entries.length === 0 ? (
+              <div className="focus-item muted">
+                No check-ins yet. Save one above — consistency is the product.
+              </div>
+            ) : (
+              entries.slice(0, 6).map((e) => (
+                <div key={e.createdAt} className="focus-item">
+                  <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+                    <div className="muted">{formatWhen(e.createdAt)}</div>
+                    <div className="progress-chip">Momentum {computeMomentum(e)}</div>
+                  </div>
+                  <div className="muted" style={{ marginTop: 10 }}>
+                    Mental {e.mental} • Physical {e.physical} • Inner {e.inner} • Social {e.social}
+                  </div>
+                  {e.notes ? (
+                    <div style={{ marginTop: 10, color: "#f8fafc", whiteSpace: "pre-wrap" }}>
+                      {e.notes}
+                    </div>
+                  ) : null}
+                </div>
+              ))
+            )}
           </div>
-          <p className="muted" style={{ marginTop: 10, lineHeight: 1.6 }}>
-            Next: we wire this to DB, add streak logic, and feed a “Momentum Score” trend on
-            Progress.
-          </p>
+
+          {latestMomentum !== null ? (
+            <p className="muted" style={{ marginTop: 14 }}>
+              Last saved momentum: <span style={{ color: "#bfdbfe", fontWeight: 800 }}>{latestMomentum}</span>
+            </p>
+          ) : null}
         </section>
       </div>
     </main>
   );
 }
 
-function CheckRow({
-  label,
-  hint,
-  value,
-  onChange,
-}: {
+function CheckRow(props: {
   label: string;
   hint: string;
-  value: Score;
-  onChange: (v: Score) => void;
+  value: CheckInValue;
+  onChange: (v: number) => void;
 }) {
   return (
     <div className="checkin-row">
       <div className="checkin-row-copy">
-        <div className="checkin-row-label">{label}</div>
-        <p className="checkin-row-hint">{hint}</p>
+        <div className="checkin-row-label">{props.label}</div>
+        <p className="checkin-row-hint">{props.hint}</p>
       </div>
 
       <select
         className="select-field checkin-select"
-        value={value}
-        onChange={(e) => onChange(Number(e.target.value) as Score)}
-        aria-label={`${label} score`}
-        title={labelForScore(value)}
+        value={props.value}
+        onChange={(e) => props.onChange(Number(e.target.value))}
+        aria-label={`${props.label} check-in`}
       >
-        {scoreOptions.map((n) => (
-          <option key={n} value={n}>
-            {n}
-          </option>
-        ))}
+        <option value={1}>1</option>
+        <option value={2}>2</option>
+        <option value={3}>3</option>
+        <option value={4}>4</option>
+        <option value={5}>5</option>
       </select>
     </div>
   );
