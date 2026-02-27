@@ -1,26 +1,22 @@
 "use client";
 
-import type { ReactNode } from "react";
 import Link from "next/link";
 import BottomNav from "@/components/bottom-nav";
-import { HeroSection } from "@/components/hero-section";
 
 export function AppShell({
   title,
   subtitle,
-  kicker,
-  right,
-  actions,
-  variant = "default",
+  kicker = "Momentum System",
+  hideHero = false,
+  heroActions,
   children,
 }: {
-  title: ReactNode;
-  subtitle?: ReactNode;
+  title: string;
+  subtitle?: string;
   kicker?: string;
-  right?: ReactNode;
-  actions?: ReactNode;
-  variant?: "default" | "blue" | "violet" | "emerald" | "amber";
-  children: ReactNode;
+  hideHero?: boolean;
+  heroActions?: React.ReactNode;
+  children: React.ReactNode;
 }) {
   return (
     <>
@@ -40,14 +36,18 @@ export function AppShell({
             </div>
           </header>
 
-          <HeroSection
-            kicker={kicker}
-            title={title}
-            subtitle={subtitle}
-            right={right}
-            actions={actions}
-            variant={variant}
-          />
+          {!hideHero ? (
+            <section className="premium-panel premium-panel-padding premium-stack">
+              <p className="premium-kicker">{kicker}</p>
+
+              <div className="premium-stack" style={{ gap: 10 }}>
+                <h1 className="premium-title">{title}</h1>
+                {subtitle ? <p className="premium-copy">{subtitle}</p> : null}
+              </div>
+
+              {heroActions ? <div className="btn-row">{heroActions}</div> : null}
+            </section>
+          ) : null}
 
           {children}
         </div>
