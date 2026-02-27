@@ -11,18 +11,13 @@ export function SignOutButton() {
 
   return (
     <button
-      type="button"
+      className="btn-danger"
       disabled={loading}
-      className="rounded-xl border border-zinc-700 bg-zinc-950/40 px-4 py-2 text-sm font-medium text-zinc-200 hover:bg-zinc-900 disabled:opacity-60"
       onClick={async () => {
         setLoading(true);
-        try {
-          await supabase.auth.signOut();
-          router.push("/auth/sign-in");
-          router.refresh();
-        } finally {
-          setLoading(false);
-        }
+        await supabase.auth.signOut();
+        router.push("/auth/sign-in");
+        router.refresh();
       }}
     >
       {loading ? "Signing out…" : "Sign out"}
