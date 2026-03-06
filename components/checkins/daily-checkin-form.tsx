@@ -127,67 +127,77 @@ export function DailyCheckinForm() {
   }
 
   return (
-    <section className="premium-panel premium-panel-padding premium-stack">
-      <div className="premium-stack" style={{ gap: 8 }}>
-        <p className="premium-kicker">Daily Coaching Pulse</p>
-        <h2 className="premium-title">Check in with your current state</h2>
-        <p className="premium-copy">
-          The strongest growth systems respond to how you actually feel, not just what is on the schedule.
-        </p>
+    <section className="card-surface card-padding">
+      <div className="section-stack">
+        <div className="section-stack" style={{ gap: 8 }}>
+          <p className="premium-kicker">Daily Coaching Pulse</p>
+          <h2 className="page-title" style={{ fontSize: "1.55rem" }}>
+            Check in with your current state
+          </h2>
+          <p className="premium-copy">
+            The strongest growth systems respond to how you actually feel, not
+            just what is on the schedule.
+          </p>
+        </div>
+
+        <div className="checkin-grid">
+          <SelectRow
+            label="Energy"
+            value={energy}
+            setValue={setEnergy}
+            hint="How resourced you feel today."
+          />
+          <SelectRow
+            label="Focus"
+            value={focus}
+            setValue={setFocus}
+            hint="How locked in and mentally clear you are."
+          />
+          <SelectRow
+            label="Stress"
+            value={stress}
+            setValue={setStress}
+            hint="How much pressure you’re carrying right now."
+          />
+          <SelectRow
+            label="Confidence"
+            value={confidence}
+            setValue={setConfidence}
+            hint="How strongly you believe in your ability to execute."
+          />
+        </div>
+
+        <textarea
+          rows={4}
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          className="textarea-field"
+          placeholder="Optional reflection — what is shaping your day right now?"
+        />
+
+        <div className="btn-row">
+          <button
+            type="button"
+            disabled={loading}
+            onClick={saveCheckin}
+            className="btn-primary"
+          >
+            {loading ? "Saving…" : "Save Today’s Check-In"}
+          </button>
+        </div>
+
+        {message ? (
+          <p className="muted" style={{ fontSize: 14 }}>
+            {message}
+          </p>
+        ) : null}
+
+        {savedAt ? (
+          <p className="muted" style={{ fontSize: 14 }}>
+            Saved for {savedAt}
+          </p>
+        ) : null}
       </div>
-
-      <div className="checkin-grid">
-        <SelectRow
-          label="Energy"
-          value={energy}
-          setValue={setEnergy}
-          hint="How resourced you feel today."
-        />
-        <SelectRow
-          label="Focus"
-          value={focus}
-          setValue={setFocus}
-          hint="How locked in and mentally clear you are."
-        />
-        <SelectRow
-          label="Stress"
-          value={stress}
-          setValue={setStress}
-          hint="How much pressure you’re carrying right now."
-        />
-        <SelectRow
-          label="Confidence"
-          value={confidence}
-          setValue={setConfidence}
-          hint="How strongly you believe in your ability to execute."
-        />
-      </div>
-
-      <textarea
-        rows={4}
-        value={notes}
-        onChange={(e) => setNotes(e.target.value)}
-        className="textarea-field checkin-notes"
-        placeholder="Optional reflection — what is shaping your day right now?"
-      />
-
-      <div className="btn-row">
-        <button
-          type="button"
-          disabled={loading}
-          onClick={saveCheckin}
-          className="auth-cta-button"
-        >
-          {loading ? "Saving…" : "Save Today’s Check-In"}
-        </button>
-      </div>
-
-      {message ? <p className="auth-message">{message}</p> : null}
-      {savedAt ? (
-        <p className="muted" style={{ fontSize: 14 }}>
-          Saved for {savedAt}
-        </p>
-      ) : null}
     </section>
   );
 }
