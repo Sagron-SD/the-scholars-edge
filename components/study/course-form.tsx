@@ -18,7 +18,7 @@ export function CourseForm({
   return (
     <form
       ref={formRef}
-      className="premium-panel premium-panel-padding premium-stack"
+      className="section-stack"
       onSubmit={async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -27,7 +27,9 @@ export function CourseForm({
         const form = new FormData(e.currentTarget);
         const title = String(form.get("title") || "").trim();
         const credits = Number(form.get("credits") || 0);
-        const current_grade = String(form.get("current_grade") || "").trim().toUpperCase();
+        const current_grade = String(form.get("current_grade") || "")
+          .trim()
+          .toUpperCase();
 
         if (!title) {
           setLoading(false);
@@ -50,49 +52,64 @@ export function CourseForm({
         onCreated?.();
       }}
     >
-      <div className="premium-stack" style={{ gap: 8 }}>
-        <p className="premium-kicker">Courses</p>
-        <h2 className="premium-title">Add a class to your academic system</h2>
-        <p className="premium-copy">
-          Track your courses, credits, and current standing in one place.
-        </p>
-      </div>
+      <div className="section-stack" style={{ gap: 14 }}>
+        <div className="section-stack" style={{ gap: 8 }}>
+          <label className="muted" style={{ fontSize: 14, fontWeight: 700 }}>
+            Course Name
+          </label>
+          <input
+            name="title"
+            className="field"
+            placeholder="Ex: Biology 101"
+            required
+          />
+        </div>
 
-      <input
-        name="title"
-        className="field auth-input"
-        placeholder="Ex: Biology 101"
-        required
-      />
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+            gap: 14,
+          }}
+        >
+          <div className="section-stack" style={{ gap: 8 }}>
+            <label className="muted" style={{ fontSize: 14, fontWeight: 700 }}>
+              Credits
+            </label>
+            <input
+              name="credits"
+              type="number"
+              min={0}
+              step="0.5"
+              className="field"
+              placeholder="Ex: 3"
+            />
+          </div>
 
-      <div className="form-grid-2">
-        <input
-          name="credits"
-          type="number"
-          min={0}
-          step="0.5"
-          className="field auth-input"
-          placeholder="Credits"
-        />
-
-        <input
-          name="current_grade"
-          className="field auth-input"
-          placeholder="Grade (A, B+, etc.)"
-        />
+          <div className="section-stack" style={{ gap: 8 }}>
+            <label className="muted" style={{ fontSize: 14, fontWeight: 700 }}>
+              Current Grade
+            </label>
+            <input
+              name="current_grade"
+              className="field"
+              placeholder="Ex: A-"
+            />
+          </div>
+        </div>
       </div>
 
       <div className="btn-row">
-        <button
-          type="submit"
-          disabled={loading}
-          className="auth-cta-button"
-        >
+        <button type="submit" disabled={loading} className="btn-primary">
           {loading ? "Saving…" : "Add Course"}
         </button>
       </div>
 
-      {message ? <p className="auth-message">{message}</p> : null}
+      {message ? (
+        <p className="muted" style={{ fontSize: 14 }}>
+          {message}
+        </p>
+      ) : null}
     </form>
   );
 }
