@@ -74,26 +74,10 @@ export function HomeSummary() {
 
   return (
     <section className="dashboard-summary-grid">
-      <SummaryCard
-        label="Milestones"
-        value={loaded ? stats.milestones : "—"}
-        accent="blue"
-      />
-      <SummaryCard
-        label="Study Sessions"
-        value={loaded ? stats.studySessions : "—"}
-        accent="violet"
-      />
-      <SummaryCard
-        label="Assignments"
-        value={loaded ? stats.assignments : "—"}
-        accent="emerald"
-      />
-      <SummaryCard
-        label="Exams"
-        value={loaded ? stats.exams : "—"}
-        accent="amber"
-      />
+      <SummaryCard label="Milestones" value={loaded ? stats.milestones : "—"} accent="blue" />
+      <SummaryCard label="Study Sessions" value={loaded ? stats.studySessions : "—"} accent="violet" />
+      <SummaryCard label="Assignments" value={loaded ? stats.assignments : "—"} accent="emerald" />
+      <SummaryCard label="Exams" value={loaded ? stats.exams : "—"} accent="amber" />
     </section>
   );
 }
@@ -108,7 +92,7 @@ function SummaryCard({
   accent: "blue" | "violet" | "emerald" | "amber";
 }) {
   return (
-    <div className={`card-surface card-padding dashboard-summary-card dashboard-summary-card-${accent}`}>
+    <div className={`dashboard-summary-card dashboard-summary-card-${accent}`}>
       <p className="dashboard-summary-label">{label}</p>
       <p className="dashboard-summary-value">{value}</p>
     </div>
