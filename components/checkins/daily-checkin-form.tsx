@@ -130,13 +130,12 @@ export function DailyCheckinForm() {
     <section className="card-surface card-padding">
       <div className="section-stack">
         <div className="section-stack" style={{ gap: 8 }}>
-          <p className="premium-kicker">Daily Coaching Pulse</p>
-          <h2 className="page-title" style={{ fontSize: "1.55rem" }}>
+          <div className="hero-eyebrow-chip">Daily Coaching Pulse</div>
+          <h2 className="page-title" style={{ fontSize: "2rem" }}>
             Check in with your current state
           </h2>
           <p className="premium-copy">
-            The strongest growth systems respond to how you actually feel, not
-            just what is on the schedule.
+            The strongest growth systems respond to how you actually feel, not just what is on the schedule.
           </p>
         </div>
 
@@ -186,17 +185,8 @@ export function DailyCheckinForm() {
           </button>
         </div>
 
-        {message ? (
-          <p className="muted" style={{ fontSize: 14 }}>
-            {message}
-          </p>
-        ) : null}
-
-        {savedAt ? (
-          <p className="muted" style={{ fontSize: 14 }}>
-            Saved for {savedAt}
-          </p>
-        ) : null}
+        {message ? <p className="muted">{message}</p> : null}
+        {savedAt ? <p className="muted">Saved for {savedAt}</p> : null}
       </div>
     </section>
   );
