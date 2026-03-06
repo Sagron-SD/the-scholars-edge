@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 
 function cx(...classes: Array<string | undefined | false | null>) {
@@ -42,7 +44,7 @@ export function PageHeader({
         {right ? <div className="topbar-actions">{right}</div> : null}
       </div>
 
-      <div>
+      <div className="section-stack" style={{ gap: 8 }}>
         <h1 className="page-title">{title}</h1>
         {subtitle ? <p className="page-subtitle">{subtitle}</p> : null}
       </div>
@@ -61,11 +63,11 @@ export function Card({
 }
 
 export function CardTitle({ children }: { children: React.ReactNode }) {
-  return <h2 className="text-lg font-semibold">{children}</h2>;
+  return <h2 style={{ fontSize: "1.125rem", fontWeight: 700 }}>{children}</h2>;
 }
 
 export function Muted({ children }: { children: React.ReactNode }) {
-  return <p className="muted text-sm">{children}</p>;
+  return <p className="muted" style={{ fontSize: "0.95rem" }}>{children}</p>;
 }
 
 export function Button({
@@ -74,13 +76,15 @@ export function Button({
   className,
   ...props
 }: React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: "primary" | "secondary" | "ghost";
+  variant?: "primary" | "secondary" | "ghost" | "danger";
 }) {
   const base =
     variant === "primary"
       ? "btn-primary"
       : variant === "secondary"
       ? "btn-secondary"
+      : variant === "danger"
+      ? "btn-danger"
       : "btn-ghost";
 
   return (
