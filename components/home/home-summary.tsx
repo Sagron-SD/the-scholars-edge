@@ -108,7 +108,7 @@ function SummaryCard({
   accent: "blue" | "violet" | "emerald" | "amber";
 }) {
   return (
-    <div className={`dashboard-summary-card dashboard-summary-card-${accent}`}>
+    <div className={`card-surface card-padding dashboard-summary-card dashboard-summary-card-${accent}`}>
       <p className="dashboard-summary-label">{label}</p>
       <p className="dashboard-summary-value">{value}</p>
     </div>
