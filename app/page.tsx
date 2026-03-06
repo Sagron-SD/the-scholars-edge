@@ -77,14 +77,16 @@ export default function HomePage() {
           <>
             <Card className="dashboard-hero">
               <div className="dashboard-hero-stack">
-                <div className="section-stack" style={{ gap: 8 }}>
-                  <p className="premium-kicker">Today’s Direction</p>
+                <div className="section-stack" style={{ gap: 10 }}>
+                  <div className="hero-eyebrow-chip">Today’s Direction</div>
+
                   <h2 className="dashboard-hero-title">
                     Build momentum with clarity, discipline, and intention.
                   </h2>
+
                   <p className="dashboard-hero-copy">
-                    Anchor your day around the few moves that matter most, then
-                    let your system do the heavy lifting.
+                    Anchor your day around the few moves that matter most, then let your
+                    system do the heavy lifting.
                   </p>
                 </div>
 
@@ -109,8 +111,10 @@ export default function HomePage() {
             <Card>
               <div className="section-stack">
                 <div className="section-stack" style={{ gap: 8 }}>
-                  <Muted>Today’s Focus</Muted>
-                  <h2>3 Priority Moves</h2>
+                  <div className="hero-eyebrow-chip">Today’s Focus</div>
+                  <h2 className="page-title" style={{ fontSize: "2rem" }}>
+                    3 Priority Moves
+                  </h2>
                   <p className="premium-copy">
                     Keep the day simple. Focus beats overwhelm.
                   </p>
