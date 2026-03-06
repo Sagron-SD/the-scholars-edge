@@ -20,12 +20,14 @@ export default function ProfilePage() {
   const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => {
+    let active = true;
+
     (async () => {
       const { data: auth } = await supabase.auth.getUser();
       const user = auth.user;
 
       if (!user) {
-        setLoading(false);
+        if (active) setLoading(false);
         return;
       }
 
@@ -35,38 +37,61 @@ export default function ProfilePage() {
         .eq("id", user.id)
         .maybeSingle();
 
+      if (!active) return;
+
       setLoading(false);
 
-      if (error) return setMessage(error.message);
+      if (error) {
+        setMessage(error.message);
+        return;
+      }
+
       setProfile((data || null) as Profile | null);
     })();
+
+    return () => {
+      active = false;
+    };
   }, [supabase]);
 
   return (
     <AppShell
       title="Profile"
-      subtitle="Your identity, settings, and streak."
+      subtitle="Your identity, settings, and personal foundation."
       kicker="Success Coaching • Academic Growth • Wellness"
       hideHero
     >
       {loading ? (
-        <section className="card-surface card-padding text-sm text-zinc-400">
-          Loading profile…
+        <section className="card-surface card-padding">
+          <p className="muted">Loading profile…</p>
         </section>
       ) : (
         <ProfileCard profile={profile} />
       )}
 
-      <section className="premium-panel premium-panel-padding premium-stack">
-        <p className="premium-kicker">Account</p>
-        <h2 className="premium-title">Account Actions</h2>
-        <p className="premium-copy">More profile editing controls are coming next.</p>
-        <div className="btn-row">
-          <SignOutButton />
+      <section className="card-surface card-padding">
+        <div className="section-stack">
+          <div className="section-stack" style={{ gap: 6 }}>
+            <p className="premium-kicker">Account</p>
+            <h2 className="premium-title" style={{ fontSize: "2rem" }}>
+              Account actions
+            </h2>
+            <p className="premium-copy">
+              Profile editing, streaks, and deeper personalization can come next.
+            </p>
+          </div>
+
+          <div className="btn-row">
+            <SignOutButton />
+          </div>
         </div>
       </section>
 
-      {message ? <p className="text-sm text-red-300">{message}</p> : null}
+      {message ? (
+        <p className="muted" style={{ fontSize: 14 }}>
+          {message}
+        </p>
+      ) : null}
     </AppShell>
   );
 }
