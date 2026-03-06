@@ -57,9 +57,17 @@ export function AppShell({
           {!hideHero ? (
             <section className={`card-surface card-padding dashboard-hero ${heroClass}`}>
               <div className="dashboard-hero-stack">
-                {kicker ? <p className="premium-kicker">{kicker}</p> : null}
+                {kicker ? <div className="hero-eyebrow-chip">{kicker}</div> : null}
 
-                <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16 }}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "flex-start",
+                    justifyContent: "space-between",
+                    gap: 16,
+                    flexWrap: "wrap",
+                  }}
+                >
                   <div className="section-stack" style={{ gap: 12 }}>
                     <h1 className="dashboard-hero-title">{title}</h1>
                     {subtitle ? <p className="dashboard-hero-copy">{subtitle}</p> : null}
