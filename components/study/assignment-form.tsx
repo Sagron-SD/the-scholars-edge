@@ -18,7 +18,7 @@ export function AssignmentForm({
   return (
     <form
       ref={formRef}
-      className="premium-panel premium-panel-padding premium-stack"
+      className="section-stack"
       onSubmit={async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -50,51 +50,72 @@ export function AssignmentForm({
         onCreated?.();
       }}
     >
-      <div className="premium-stack" style={{ gap: 8 }}>
+      <div className="section-stack" style={{ gap: 8 }}>
         <p className="premium-kicker">Assignments</p>
-        <h2 className="premium-title">Capture upcoming coursework</h2>
+        <h2 className="premium-title" style={{ fontSize: "1.8rem" }}>
+          Capture upcoming coursework
+        </h2>
         <p className="premium-copy">
-          Keep important deliverables visible so deadlines stop sneaking up on you.
+          Keep deliverables visible so deadlines stop sneaking up on you.
         </p>
       </div>
 
-      <input
-        name="title"
-        className="field auth-input"
-        placeholder="Ex: Midterm essay"
-        required
-      />
+      <div className="section-stack" style={{ gap: 14 }}>
+        <div className="section-stack" style={{ gap: 8 }}>
+          <label className="muted" style={{ fontSize: 14, fontWeight: 700 }}>
+            Assignment Title
+          </label>
+          <input
+            name="title"
+            className="field"
+            placeholder="Ex: Midterm essay"
+            required
+          />
+        </div>
 
-      <div className="form-grid-2">
-        <input
-          name="due_date"
-          type="date"
-          className="field auth-input"
-        />
-
-        <select
-          name="status"
-          className="select-field auth-input"
-          defaultValue="pending"
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+            gap: 14,
+          }}
         >
-          <option value="pending">Pending</option>
-          <option value="in_progress">In Progress</option>
-          <option value="submitted">Submitted</option>
-          <option value="completed">Completed</option>
-        </select>
+          <div className="section-stack" style={{ gap: 8 }}>
+            <label className="muted" style={{ fontSize: 14, fontWeight: 700 }}>
+              Due Date
+            </label>
+            <input name="due_date" type="date" className="field" />
+          </div>
+
+          <div className="section-stack" style={{ gap: 8 }}>
+            <label className="muted" style={{ fontSize: 14, fontWeight: 700 }}>
+              Status
+            </label>
+            <select
+              name="status"
+              className="select-field"
+              defaultValue="pending"
+            >
+              <option value="pending">Pending</option>
+              <option value="in_progress">In Progress</option>
+              <option value="submitted">Submitted</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
+        </div>
       </div>
 
       <div className="btn-row">
-        <button
-          type="submit"
-          disabled={loading}
-          className="auth-cta-button"
-        >
+        <button type="submit" disabled={loading} className="btn-primary">
           {loading ? "Saving…" : "Add Assignment"}
         </button>
       </div>
 
-      {message ? <p className="auth-message">{message}</p> : null}
+      {message ? (
+        <p className="muted" style={{ fontSize: 14 }}>
+          {message}
+        </p>
+      ) : null}
     </form>
   );
 }
