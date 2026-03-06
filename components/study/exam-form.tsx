@@ -18,7 +18,7 @@ export function ExamForm({
   return (
     <form
       ref={formRef}
-      className="premium-panel premium-panel-padding premium-stack"
+      className="section-stack"
       onSubmit={async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -48,38 +48,48 @@ export function ExamForm({
         onCreated?.();
       }}
     >
-      <div className="premium-stack" style={{ gap: 8 }}>
+      <div className="section-stack" style={{ gap: 8 }}>
         <p className="premium-kicker">Exams</p>
-        <h2 className="premium-title">Stay ahead of major evaluations</h2>
+        <h2 className="premium-title" style={{ fontSize: "1.8rem" }}>
+          Keep major assessments visible
+        </h2>
         <p className="premium-copy">
-          Log key exam dates early so preparation becomes structured, not reactive.
+          Log your exam dates so preparation stays proactive.
         </p>
       </div>
 
-      <input
-        name="title"
-        className="field auth-input"
-        placeholder="Ex: Biology final"
-        required
-      />
+      <div className="section-stack" style={{ gap: 14 }}>
+        <div className="section-stack" style={{ gap: 8 }}>
+          <label className="muted" style={{ fontSize: 14, fontWeight: 700 }}>
+            Exam Title
+          </label>
+          <input
+            name="title"
+            className="field"
+            placeholder="Ex: Biology final"
+            required
+          />
+        </div>
 
-      <input
-        name="exam_date"
-        type="date"
-        className="field auth-input"
-      />
+        <div className="section-stack" style={{ gap: 8 }}>
+          <label className="muted" style={{ fontSize: 14, fontWeight: 700 }}>
+            Exam Date
+          </label>
+          <input name="exam_date" type="date" className="field" />
+        </div>
+      </div>
 
       <div className="btn-row">
-        <button
-          type="submit"
-          disabled={loading}
-          className="auth-cta-button"
-        >
+        <button type="submit" disabled={loading} className="btn-primary">
           {loading ? "Saving…" : "Add Exam"}
         </button>
       </div>
 
-      {message ? <p className="auth-message">{message}</p> : null}
+      {message ? (
+        <p className="muted" style={{ fontSize: 14 }}>
+          {message}
+        </p>
+      ) : null}
     </form>
   );
 }
