@@ -23,9 +23,7 @@ export default function BottomNav() {
             <Link
               key={item.href}
               href={item.href}
-              className={`bottom-nav-link ${
-                active ? "bottom-nav-link-active" : ""
-              }`}
+              className={`bottom-nav-link ${active ? "bottom-nav-link-active" : ""}`}
             >
               {item.label}
             </Link>
