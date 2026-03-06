@@ -75,18 +75,18 @@ export default function HomePage() {
           </Card>
         ) : (
           <>
-            <Card className="dashboard-hero">
-              <div className="dashboard-hero-stack">
-                <div className="section-stack" style={{ gap: 10 }}>
-                  <div className="hero-eyebrow-chip">Today’s Direction</div>
+            <Card className="hero-surface">
+              <div className="hero-stack">
+                <div className="section-stack" style={{ gap: 12 }}>
+                  <div className="hero-kicker">Today’s Direction</div>
 
-                  <h2 className="dashboard-hero-title">
+                  <h2 className="hero-title">
                     Build momentum with clarity, discipline, and intention.
                   </h2>
 
-                  <p className="dashboard-hero-copy">
+                  <p className="hero-copy">
                     Anchor your day around the few moves that matter most, then let your
-                    system do the heavy lifting.
+                    system do the heavy lifting across study, progress, and personal growth.
                   </p>
                 </div>
 
@@ -97,6 +97,10 @@ export default function HomePage() {
 
                   <Link href="/study" className="btn-secondary">
                     Start Study
+                  </Link>
+
+                  <Link href="/alignment" className="btn-secondary">
+                    Check Alignment
                   </Link>
 
                   <Link href="/community" className="btn-secondary">
@@ -111,10 +115,8 @@ export default function HomePage() {
             <Card>
               <div className="section-stack">
                 <div className="section-stack" style={{ gap: 8 }}>
-                  <div className="hero-eyebrow-chip">Today’s Focus</div>
-                  <h2 className="page-title" style={{ fontSize: "2rem" }}>
-                    3 Priority Moves
-                  </h2>
+                  <div className="hero-kicker">Today’s Focus</div>
+                  <h2 className="premium-title">3 Priority Moves</h2>
                   <p className="premium-copy">
                     Keep the day simple. Focus beats overwhelm.
                   </p>
