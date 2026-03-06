@@ -18,7 +18,7 @@ export function MilestoneCreateForm({
   return (
     <form
       ref={formRef}
-      className="premium-panel premium-panel-padding premium-stack"
+      className="section-stack"
       onSubmit={async (e) => {
         e.preventDefault();
         setMessage(null);
@@ -54,58 +54,98 @@ export function MilestoneCreateForm({
         onCreated?.();
       }}
     >
-      <div className="premium-stack" style={{ gap: 8 }}>
-        <p className="premium-kicker">Create milestone</p>
-        <h2 className="premium-title">Turn ambition into visible motion</h2>
-        <p className="premium-copy">
-          Define the outcome, set the category, and anchor it with a next step.
-        </p>
-      </div>
+      <div className="section-stack" style={{ gap: 14 }}>
+        <div className="section-stack" style={{ gap: 8 }}>
+          <label
+            htmlFor="milestone-title"
+            className="muted"
+            style={{ fontSize: 14, fontWeight: 700 }}
+          >
+            Milestone Title
+          </label>
+          <input
+            id="milestone-title"
+            name="title"
+            className="field"
+            placeholder="Ex: Raise GPA to 3.5"
+            required
+          />
+        </div>
 
-      <input
-        name="title"
-        className="field auth-input"
-        placeholder="Ex: Raise GPA to 3.5"
-        required
-      />
-
-      <div className="form-grid-2">
-        <select
-          name="category"
-          className="select-field auth-input"
-          defaultValue="academic"
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+            gap: 14,
+          }}
         >
-          <option value="academic">Academic</option>
-          <option value="career">Career</option>
-          <option value="wellness">Wellness</option>
-          <option value="financial">Financial</option>
-          <option value="personal_brand">Personal Brand</option>
-        </select>
+          <div className="section-stack" style={{ gap: 8 }}>
+            <label
+              htmlFor="milestone-category"
+              className="muted"
+              style={{ fontSize: 14, fontWeight: 700 }}
+            >
+              Category
+            </label>
+            <select
+              id="milestone-category"
+              name="category"
+              className="select-field"
+              defaultValue="academic"
+            >
+              <option value="academic">Academic</option>
+              <option value="career">Career</option>
+              <option value="wellness">Wellness</option>
+              <option value="financial">Financial</option>
+              <option value="personal_brand">Personal Brand</option>
+            </select>
+          </div>
 
-        <input
-          name="target_date"
-          type="date"
-          className="field auth-input"
-        />
+          <div className="section-stack" style={{ gap: 8 }}>
+            <label
+              htmlFor="milestone-target-date"
+              className="muted"
+              style={{ fontSize: 14, fontWeight: 700 }}
+            >
+              Target Date
+            </label>
+            <input
+              id="milestone-target-date"
+              name="target_date"
+              type="date"
+              className="field"
+            />
+          </div>
+        </div>
+
+        <div className="section-stack" style={{ gap: 8 }}>
+          <label
+            htmlFor="milestone-next-action"
+            className="muted"
+            style={{ fontSize: 14, fontWeight: 700 }}
+          >
+            Next Action
+          </label>
+          <input
+            id="milestone-next-action"
+            name="next_action"
+            className="field"
+            placeholder="Ex: Meet with advisor and map out weekly study blocks"
+          />
+        </div>
       </div>
-
-      <input
-        name="next_action"
-        className="field auth-input"
-        placeholder="Next action (optional)"
-      />
 
       <div className="btn-row">
-        <button
-          type="submit"
-          disabled={loading}
-          className="auth-cta-button"
-        >
+        <button type="submit" disabled={loading} className="btn-primary">
           {loading ? "Saving…" : "Add Milestone"}
         </button>
       </div>
 
-      {message ? <p className="auth-message">{message}</p> : null}
+      {message ? (
+        <p className="muted" style={{ fontSize: 14 }}>
+          {message}
+        </p>
+      ) : null}
     </form>
   );
 }
