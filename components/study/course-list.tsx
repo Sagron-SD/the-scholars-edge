@@ -60,7 +60,10 @@ export function CourseList({
     (c) => c.current_grade && c.credits && gradePoints[c.current_grade] !== undefined
   );
 
-  const totalCredits = gradedCourses.reduce((sum, c) => sum + Number(c.credits || 0), 0);
+  const totalCredits = gradedCourses.reduce(
+    (sum, c) => sum + Number(c.credits || 0),
+    0
+  );
 
   const gpa =
     totalCredits > 0
@@ -72,10 +75,10 @@ export function CourseList({
 
   return (
     <section className="section-stack">
-      <div className="premium-panel premium-panel-padding premium-stack">
-        <div className="premium-stack" style={{ gap: 6 }}>
+      <div className="card-surface card-padding">
+        <div className="section-stack" style={{ gap: 6 }}>
           <p className="premium-kicker">GPA Snapshot</p>
-          <h2 className="premium-title" style={{ fontSize: "1.7rem" }}>
+          <h2 className="premium-title" style={{ fontSize: "2rem" }}>
             Current estimated GPA: {gpa !== null ? gpa.toFixed(2) : "N/A"}
           </h2>
           <p className="premium-copy">
@@ -84,10 +87,18 @@ export function CourseList({
         </div>
       </div>
 
-      <div className="progress-list-header">
-        <div className="section-stack" style={{ gap: 4 }}>
-          <p className="premium-kicker">Course list</p>
-          <h2 className="premium-title" style={{ fontSize: "1.7rem" }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "flex-end",
+          justifyContent: "space-between",
+          gap: 16,
+          flexWrap: "wrap",
+        }}
+      >
+        <div className="section-stack" style={{ gap: 6 }}>
+          <p className="premium-kicker">Course List</p>
+          <h2 className="premium-title" style={{ fontSize: "2rem" }}>
             Your academic load
           </h2>
         </div>
@@ -98,31 +109,70 @@ export function CourseList({
       </div>
 
       {loading ? (
-        <div className="premium-panel premium-panel-padding">
+        <div className="card-surface card-padding">
           <p className="muted">Loading courses…</p>
         </div>
       ) : courses.length ? (
         courses.map((course) => (
-          <div key={course.id} className="premium-panel premium-panel-padding course-card">
-            <div className="course-card-top">
-              <h3 className="progress-card-title">{course.title}</h3>
-              <div className="course-grade-chip">
+          <article key={course.id} className="card-surface card-padding">
+            <div
+              style={{
+                display: "flex",
+                alignItems: "flex-start",
+                justifyContent: "space-between",
+                gap: 16,
+                flexWrap: "wrap",
+              }}
+            >
+              <div className="section-stack" style={{ gap: 8 }}>
+                <h3
+                  style={{
+                    fontFamily: "var(--font-display)",
+                    fontSize: "1.4rem",
+                    lineHeight: 1.05,
+                    fontWeight: 800,
+                    letterSpacing: "-0.05em",
+                    color: "var(--text)",
+                  }}
+                >
+                  {course.title}
+                </h3>
+
+                <p className="premium-copy">Credits: {course.credits ?? "—"}</p>
+              </div>
+
+              <div
+                style={{
+                  minWidth: 68,
+                  minHeight: 46,
+                  borderRadius: 16,
+                  padding: "0 14px",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: "rgba(22, 195, 91, 0.08)",
+                  border: "1px solid rgba(22, 195, 91, 0.14)",
+                  color: "var(--primary-deep)",
+                  fontWeight: 800,
+                  letterSpacing: "-0.03em",
+                }}
+              >
                 {course.current_grade ?? "—"}
               </div>
             </div>
-
-            <p className="premium-copy">
-              Credits: {course.credits ?? "—"}
-            </p>
-          </div>
+          </article>
         ))
       ) : (
-        <div className="premium-panel premium-panel-padding">
+        <div className="card-surface card-padding">
           <p className="muted">No courses yet. Add your first class above.</p>
         </div>
       )}
 
-      {message ? <p className="auth-message">{message}</p> : null}
+      {message ? (
+        <p className="muted" style={{ fontSize: 14 }}>
+          {message}
+        </p>
+      ) : null}
     </section>
   );
 }
