@@ -15,10 +15,72 @@ function initialsFromName(name: string) {
   return (first + last).toUpperCase();
 }
 
+function ProfileTile({
+  label,
+  value,
+  hint,
+  fullWidth = false,
+}: {
+  label: string;
+  value: string;
+  hint: string;
+  fullWidth?: boolean;
+}) {
+  return (
+    <div
+      style={{
+        border: "1px solid rgba(15, 23, 42, 0.08)",
+        borderRadius: 20,
+        background: "rgba(255, 255, 255, 0.84)",
+        padding: 18,
+        boxShadow: "var(--shadow-sm)",
+        gridColumn: fullWidth ? "1 / -1" : undefined,
+      }}
+    >
+      <p
+        style={{
+          fontSize: 12,
+          letterSpacing: "0.12em",
+          textTransform: "uppercase",
+          color: "var(--muted)",
+          fontWeight: 800,
+        }}
+      >
+        {label}
+      </p>
+
+      <p
+        style={{
+          marginTop: 10,
+          fontFamily: "var(--font-display)",
+          fontSize: "1.2rem",
+          lineHeight: 1.1,
+          fontWeight: 800,
+          letterSpacing: "-0.04em",
+          color: "var(--text)",
+        }}
+      >
+        {value}
+      </p>
+
+      <p
+        style={{
+          marginTop: 8,
+          color: "var(--text-soft)",
+          fontSize: 14,
+          lineHeight: 1.6,
+        }}
+      >
+        {hint}
+      </p>
+    </div>
+  );
+}
+
 export function ProfileCard({ profile }: { profile: Profile | null }) {
   if (!profile) {
     return (
-      <section className="premium-panel premium-panel-padding">
+      <section className="card-surface card-padding">
         <p className="premium-copy">No profile data yet.</p>
       </section>
     );
@@ -29,49 +91,98 @@ export function ProfileCard({ profile }: { profile: Profile | null }) {
   const avatar = initialsFromName(displayName);
 
   return (
-    <section className="premium-panel premium-panel-padding premium-stack">
-      <div className="profile-hero">
-        <div className="profile-identity">
-          <p className="profile-kicker">
-            SUCCESS COACHING • ACADEMIC GROWTH • WELLNESS
-          </p>
+    <section className="card-surface card-padding">
+      <div className="section-stack">
+        <div
+          style={{
+            display: "flex",
+            alignItems: "flex-start",
+            justifyContent: "space-between",
+            gap: 18,
+            flexWrap: "wrap",
+          }}
+        >
+          <div className="section-stack" style={{ gap: 12, flex: 1, minWidth: 0 }}>
+            <div className="hero-kicker">Identity</div>
 
-          <div>
-            <h2 className="profile-name">{displayName}</h2>
-            <p className="profile-handle">{handle}</p>
+            <div className="section-stack" style={{ gap: 6 }}>
+              <h1
+                style={{
+                  fontFamily: "var(--font-display)",
+                  fontSize: "clamp(2.2rem, 5vw, 3.5rem)",
+                  lineHeight: 0.95,
+                  fontWeight: 800,
+                  letterSpacing: "-0.07em",
+                  color: "var(--text)",
+                }}
+              >
+                {displayName}
+              </h1>
+
+              <p
+                style={{
+                  fontSize: "1rem",
+                  color: "var(--muted)",
+                  fontWeight: 600,
+                }}
+              >
+                {handle}
+              </p>
+            </div>
+
+            <p className="premium-copy" style={{ maxWidth: 680 }}>
+              This is the identity layer that anchors your system. It shapes how the
+              app frames your coaching prompts, planning flow, and growth language.
+            </p>
           </div>
 
-          <p className="profile-blurb">
-            This is the identity that anchors your system. We’ll use it to tailor
-            your coaching prompts and planning defaults.
-          </p>
+          <div
+            aria-label="Profile avatar"
+            style={{
+              width: 72,
+              height: 72,
+              borderRadius: 22,
+              border: "1px solid rgba(22, 195, 91, 0.14)",
+              background: "rgba(255, 255, 255, 0.88)",
+              display: "grid",
+              placeItems: "center",
+              boxShadow: "var(--shadow-sm)",
+              color: "var(--primary-deep)",
+              fontFamily: "var(--font-display)",
+              fontSize: "1.35rem",
+              fontWeight: 800,
+              letterSpacing: "-0.04em",
+            }}
+          >
+            {avatar}
+          </div>
         </div>
 
-        <div className="profile-avatar" aria-label="Profile avatar">
-          {avatar}
-        </div>
-      </div>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+            gap: 16,
+          }}
+        >
+          <ProfileTile
+            label="Persona"
+            value={profile.persona_type || "Not set"}
+            hint="Your coaching lens for goals, routines, and momentum."
+          />
 
-      <div className="profile-grid">
-        <div className="profile-tile">
-          <p className="label">Persona</p>
-          <p className="value">{profile.persona_type || "Not set"}</p>
-          <p className="hint">Your coaching lens for goals, routines, and momentum.</p>
-        </div>
+          <ProfileTile
+            label="School Level"
+            value={profile.school_level || "Not set"}
+            hint="Used to shape study structure and planning cadence."
+          />
 
-        <div className="profile-tile">
-          <p className="label">School level</p>
-          <p className="value">{profile.school_level || "Not set"}</p>
-          <p className="hint">Used to shape study structure and planning cadence.</p>
-        </div>
-
-        <div className="profile-tile span-2">
-          <p className="label">What’s next</p>
-          <p className="value">Next Patch</p>
-          <p className="hint">
-            Profile editing, streaks, and a wellness baseline (sleep, hydration,
-            movement) that ties into your daily coaching.
-          </p>
+          <ProfileTile
+            label="What’s Next"
+            value="Next Patch"
+            hint="Profile editing, streaks, and a wellness baseline that ties into your daily coaching."
+            fullWidth
+          />
         </div>
       </div>
     </section>
