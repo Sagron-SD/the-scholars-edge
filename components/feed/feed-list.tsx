@@ -11,6 +11,29 @@ type FeedPost = {
   user_id: string;
 };
 
+function FeedTypeChip({ type }: { type: string }) {
+  return (
+    <span
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        minHeight: 34,
+        padding: "0 12px",
+        borderRadius: 999,
+        border: "1px solid rgba(22, 195, 91, 0.14)",
+        background: "rgba(22, 195, 91, 0.08)",
+        color: "var(--primary-deep)",
+        fontSize: 12,
+        fontWeight: 800,
+        letterSpacing: "0.06em",
+        textTransform: "capitalize",
+      }}
+    >
+      {type.replace("_", " ")}
+    </span>
+  );
+}
+
 export function FeedList({ reloadKey = 0 }: { reloadKey?: number }) {
   const [supabase] = useState(() => createBrowserClient());
   const [posts, setPosts] = useState<FeedPost[]>([]);
@@ -40,12 +63,23 @@ export function FeedList({ reloadKey = 0 }: { reloadKey?: number }) {
 
   return (
     <section className="section-stack">
-      <div className="progress-list-header">
-        <div className="section-stack" style={{ gap: 4 }}>
-          <p className="premium-kicker">Community feed</p>
-          <h2 className="premium-title" style={{ fontSize: "1.7rem" }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "flex-end",
+          justifyContent: "space-between",
+          gap: 16,
+          flexWrap: "wrap",
+        }}
+      >
+        <div className="section-stack" style={{ gap: 6 }}>
+          <p className="premium-kicker">Community Feed</p>
+          <h2 className="premium-title" style={{ fontSize: "2rem" }}>
             Shared progress and reflections
           </h2>
+          <p className="premium-copy">
+            Public updates from people building momentum in real time.
+          </p>
         </div>
 
         <button className="btn-secondary" onClick={loadPosts}>
@@ -54,32 +88,55 @@ export function FeedList({ reloadKey = 0 }: { reloadKey?: number }) {
       </div>
 
       {loading ? (
-        <div className="premium-panel premium-panel-padding">
+        <div className="card-surface card-padding">
           <p className="muted">Loading posts…</p>
         </div>
       ) : posts.length ? (
         posts.map((post) => (
-          <div key={post.id} className="premium-panel premium-panel-padding community-post-card">
-            <div className="community-post-meta">
-              <span className="progress-chip">
-                {post.post_type.replace("_", " ")}
-              </span>
+          <article key={post.id} className="card-surface card-padding">
+            <div className="section-stack" style={{ gap: 14 }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: 12,
+                  flexWrap: "wrap",
+                }}
+              >
+                <FeedTypeChip type={post.post_type} />
 
-              <span className="muted" style={{ fontSize: 14 }}>
-                {new Date(post.created_at).toLocaleString()}
-              </span>
+                <span className="muted" style={{ fontSize: 14 }}>
+                  {new Date(post.created_at).toLocaleString()}
+                </span>
+              </div>
+
+              <p
+                style={{
+                  color: "var(--text)",
+                  fontSize: "1rem",
+                  lineHeight: 1.75,
+                  whiteSpace: "pre-wrap",
+                }}
+              >
+                {post.content}
+              </p>
             </div>
-
-            <p className="community-post-content">{post.content}</p>
-          </div>
+          </article>
         ))
       ) : (
-        <div className="premium-panel premium-panel-padding">
-          <p className="muted">No posts yet. Be the first to share a progress update.</p>
+        <div className="card-surface card-padding">
+          <p className="muted">
+            No posts yet. Be the first to share a progress update.
+          </p>
         </div>
       )}
 
-      {message ? <p className="auth-message">{message}</p> : null}
+      {message ? (
+        <p className="muted" style={{ fontSize: 14 }}>
+          {message}
+        </p>
+      ) : null}
     </section>
   );
 }
